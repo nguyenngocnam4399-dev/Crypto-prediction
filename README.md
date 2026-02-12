@@ -8,19 +8,12 @@
 ---
 
 ## About This Project
-Dự án này được xây dựng với mục tiêu nghiên cứu và kỹ thuật nhằm thiết kế một hệ thống nghiên cứu giao dịch định lượng có cấu trúc, có khả năng mở rộng và có thể kiểm định được. Về mặt nghiên cứu, hệ thống hướng tới việc chuẩn hóa cách tiếp cận tín hiệu giao dịch bằng cách tách biệt rõ ràng giữa dữ liệu thị trường thô, lớp chỉ báo kỹ thuật, lớp điều kiện logic (metric), lớp quyết định (prediction) và lớp xác nhận hiệu suất (backtest/confirmation). Thay vì phụ thuộc vào mô hình học máy khó giải thích, dự án tập trung xây dựng một cơ chế chấm điểm xác định (deterministic scoring) dựa trên trọng số và khái niệm edge, cho phép đánh giá mức độ áp đảo giữa bên mua và bên bán một cách minh bạch. Về mặt kỹ thuật, dự án triển khai một kiến trúc Data Warehouse theo hướng fact-driven với grain được định nghĩa rõ ràng, đảm bảo tính idempotent trong ETL, tách biệt các tầng xử lý dữ liệu để tránh leakage, và cho phép truy vết toàn bộ vòng đời của một tín hiệu từ lúc hình thành đến khi được xác nhận. Hệ thống không chỉ tạo ra tín hiệu giao dịch mà còn khai thác các cấu trúc thị trường lặp lại thông qua khai phá mẫu (FP-Growth), từ đó đánh giá tính bền vững của edge. Tổng thể, đây là một nền tảng nghiên cứu định lượng được thiết kế để ưu tiên tính minh bạch, khả năng mở rộng và kiểm định thực nghiệm, thay vì tối ưu ngắn hạn theo hướng overfitting.
+This project was developed to design a structured, scalable, and empirically testable quantitative trading research system. It standardizes the entire workflow from raw market data, technical indicators, and logical conditions (metrics), to trading decisions and performance confirmation, ensuring clear separation between processing layers to prevent data leakage. Instead of relying on opaque machine learning models, the system implements a deterministic scoring mechanism based on weighted metrics and the concept of edge, allowing transparent evaluation of directional dominance between buyers and sellers. From a technical perspective, the Data Warehouse architecture follows a fact-driven design with clearly defined grain, idempotent ETL processes, and full traceability of the signal lifecycle. Beyond signal generation, the platform also mines recurring market structures using FP-Growth to assess the sustainability of edge. Overall, this framework prioritizes transparency, scalability, and experimental validation over short-term optimization or overfitting.
 
 ---
 
 ## Overview
-**Crypto Data Pipeline** is an **end-to-end Data Engineering system** designed to automatically **collect, stream, process, analyze, and visualize** cryptocurrency market data.  
-The system integrates **Apache Kafka** to enable **real-time data flow** between crawlers (producers) and consumers, which process and store the data for analytics and visualization.
-
-**Main Objectives:**
-- Enable **real-time ingestion** using Apache Kafka.  
-- Automate **data transformation and analysis** using Airflow and Spark.  
-- Combine **quantitative (price)** and **qualitative (news sentiment)** data.  
-- Visualize data and indicators using Grafana.  
+This project implements an end-to-end quantitative trading research pipeline built on a layered Data Warehouse architecture. It transforms real-time crypto market data into atomic indicators, configurable trading metrics, and deterministic buy/sell signals through a weighted scoring engine. Signals are independently validated via adaptive backtesting and further analyzed using structural pattern mining (FP-Growth) to assess edge sustainability. The system prioritizes transparency, reproducibility, and extensible research design.  
 
 ---
 
