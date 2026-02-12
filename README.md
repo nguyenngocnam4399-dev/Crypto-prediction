@@ -1,4 +1,4 @@
-# Crypto Data Pipeline (with Apache Kafka)
+# 🚀 Crypto Data Pipeline with Deterministic Quant Research Framework  
 
 ### Data Engineering Capstone Project  
 **Author:** Nguyễn Ngọc Nam  
@@ -7,364 +7,223 @@
 
 ---
 
-## 1️⃣ Introduction
-This project was developed to design a structured, scalable, and empirically testable quantitative trading research system. It standardizes the entire workflow from raw market data, technical indicators, and logical conditions (metrics), to trading decisions and performance confirmation, ensuring clear separation between processing layers to prevent data leakage. Instead of relying on opaque machine learning models, the system implements a deterministic scoring mechanism based on weighted metrics and the concept of edge, allowing transparent evaluation of directional dominance between buyers and sellers. From a technical perspective, the Data Warehouse architecture follows a fact-driven design with clearly defined grain, idempotent ETL processes, and full traceability of the signal lifecycle. Beyond signal generation, the platform also mines recurring market structures using FP-Growth to assess the sustainability of edge. Overall, this framework prioritizes transparency, scalability, and experimental validation over short-term optimization or overfitting.
+# 1️⃣ Introduction
+
+This project designs a structured, scalable, and empirically testable quantitative trading research framework. It standardizes the full lifecycle of a trading signal—from raw market data ingestion, technical indicator computation, and metric abstraction, to deterministic prediction and independent confirmation—while strictly separating processing layers to prevent data leakage.
+
+Instead of relying on opaque machine learning models, the system implements a weighted, metric-driven scoring engine based on the concept of **edge**, allowing transparent evaluation of directional dominance between buyers and sellers. The architecture follows a fact-driven Data Warehouse design with clearly defined grain, idempotent ETL processes, and full signal traceability. Structural pattern mining (FP-Growth) is applied to validated trades to assess edge sustainability. The framework prioritizes transparency, reproducibility, and experimental rigor over short-term optimization.
 
 ---
 
-## 2️⃣ Overview
-This project implements an end-to-end quantitative trading research pipeline built on a layered Data Warehouse architecture. It transforms real-time crypto market data into atomic indicators, configurable trading metrics, and deterministic buy/sell signals through a weighted scoring engine. Signals are independently validated via adaptive backtesting and further analyzed using structural pattern mining (FP-Growth) to assess edge sustainability. The system prioritizes transparency, reproducibility, and extensible research design.  
+# 2️⃣ Overview
+
+The platform implements an end-to-end quantitative research pipeline built on a layered Data Warehouse architecture. Real-time crypto market data is transformed into atomic indicators, configurable trading metrics, and deterministic buy/sell signals. Signals are validated via adaptive backtesting and analyzed using structural pattern mining to measure performance robustness and recurring market structures.
 
 ---
 
-## 3️⃣ System Architecture
+# 3️⃣ System Architecture
 
 ![System Architecture](images/System_Architecture.png)
 
-The system follows a layered architecture that separates data ingestion, transformation, signal modeling, validation, and analytics. Each layer has a clearly defined responsibility to ensure scalability, traceability, and controlled experimentation.
-
----
+The system follows a layered architecture that separates ingestion, transformation, signal modeling, validation, and analytics to ensure scalability and experimental control.
 
 ### 1. Data Ingestion
 
-- Real-time crypto market data is streamed via Kafka.
-- Spark Streaming processes OHLCV data.
-- Cleaned records are stored in `fact_kline`.
+- Kafka streams real-time OHLCV market data  
+- Spark Streaming processes and normalizes records  
+- Clean data stored in `fact_kline`  
 
-This layer establishes immutable, time-series market truth.
-
----
+Establishes immutable market truth.
 
 ### 2. Indicator Computation
 
-- Atomic technical indicators (RSI, MACD, EMA, ADX, Bollinger Bands, VWAP, etc.) are computed using Spark.
-- Each indicator is stored independently in `fact_indicator`.
-- Processing is partitioned by symbol and interval for clear grain definition.
+- Atomic indicators (RSI, MACD, EMA, ADX, BB, VWAP, ATR, etc.) computed via Spark  
+- Stored independently in `fact_indicator`  
+- Partitioned by symbol and interval  
 
-This ensures transparency and full recomputability.
-
----
+Ensures transparency and recomputability.
 
 ### 3. Metric Abstraction
 
-- Indicators are converted into configurable trading conditions defined in `dim_metric`.
-- Evaluated metric states are stored in `fact_metric_value`.
-- Logic includes threshold checks, directional rules, cross detection, and volatility filters.
+- Logical trading conditions defined in `dim_metric`  
+- Evaluated results stored in `fact_metric_value`  
+- Supports threshold, trend, cross, and volatility logic  
 
-This enables strategy tuning without modifying application code.
-
----
+Enables configuration-driven strategy design.
 
 ### 4. Prediction Engine
 
-- BUY and SELL scores are computed independently using weighted metrics.
-- Edge and confidence are derived to measure directional dominance.
-- Signals are stored in `fact_prediction`.
+- Independent BUY and SELL scoring  
+- Edge and confidence calculation  
+- Results stored in `fact_prediction`  
 
-The model remains deterministic and fully explainable.
-
----
+Deterministic, explainable, and auditable.
 
 ### 5. Backtesting & Confirmation
 
-- Predictions are validated using adaptive TP/SL within a controlled lookahead window.
-- Results are written to `fact_prediction_result`.
-- Confirmation is decoupled from prediction to prevent data leakage.
+- Adaptive TP/SL within controlled lookahead window  
+- Results written to `fact_prediction_result`  
+- Strict separation from prediction layer  
 
-This preserves realistic and reproducible evaluation.
-
----
+Prevents leakage and ensures realistic evaluation.
 
 ### 6. Analytics & Pattern Mining
 
-- Performance metrics (equity curve, rolling stability, expectancy) are derived directly from warehouse facts.
-- FP-Growth mining identifies recurring structural win patterns.
-- A Flask API exposes analytics endpoints for visualization.
+- Equity curve, rolling stability, expectancy metrics  
+- Regime-based performance analysis  
+- FP-Growth mining of structural win patterns  
+- Flask API for visualization  
 
-This layer supports systematic evaluation and structural edge validation.
-
+Supports systematic edge validation.
 
 ---
 
-## 4️⃣ Data Warehouse Design
-Data Warehouse Schema
+# 4️⃣ Data Warehouse Design
+
 ![Warehouse ERD](images/warehouse_schema.png)
-The warehouse follows a fact-driven design where market data, indicators, metrics, predictions, and confirmation results are stored as separate fact tables with clearly defined grain. Dimension tables provide normalization for symbols, intervals, indicators, and metrics.
 
----
+The warehouse follows a fact-driven layered model. Market data, indicators, metrics, predictions, and confirmation results are stored in separate fact tables with explicitly defined grain to ensure traceability and reproducibility.
 
-## 🔹 Core Dimensions
+## Core Dimensions
 
-- **dim_symbol** – tradable assets  
-- **dim_interval** – timeframe definition  
-- **dim_indicator_type** – atomic indicator registry  
-- **dim_metric** – configurable trading logic  
+- `dim_symbol` – tradable assets  
+- `dim_interval` – timeframe registry  
+- `dim_indicator_type` – atomic indicator definitions  
+- `dim_metric` – configurable trading logic  
 
----
+## Fact Layers
 
-## 🔹 Fact Layers
-
-| Table                     | Grain                                      | Purpose                          |
-|---------------------------|--------------------------------------------|----------------------------------|
-| `fact_kline`              | (symbol, interval, close_time)             | Raw market data                 |
-| `fact_indicator`          | (symbol, interval, indicator, timestamp)   | Atomic indicator values         |
-| `fact_metric_value`       | (symbol, interval, metric, calculating_at) | Evaluated trading conditions    |
-| `fact_prediction`         | (symbol, interval, predicting_at)          | Deterministic trading decisions |
-| `fact_prediction_result`  | (prediction_id)                            | Realized trade outcomes         |
-
----
+| Table                    | Grain                                      | Role |
+|--------------------------|--------------------------------------------|------|
+| `fact_kline`             | (symbol, interval, close_time)             | Market truth |
+| `fact_indicator`         | (symbol, interval, indicator, timestamp)   | Atomic signals |
+| `fact_metric_value`      | (symbol, interval, metric, calculating_at) | Logical conditions |
+| `fact_prediction`        | (symbol, interval, predicting_at)          | Trading hypothesis |
+| `fact_prediction_result` | (prediction_id)                            | Realized outcome |
 
 ### Design Principles
 
-- Clear grain definition  
-- No cross-layer coupling  
+- Explicit grain definition  
 - Idempotent ETL  
-- Independent prediction and confirmation  
-- Fully traceable signal lifecycle
+- Layered separation of concerns  
+- No signal-result coupling  
+- Fully traceable signal lifecycle  
 
 ---
 
 # 5️⃣ Indicator Engineering
 
-The indicator layer transforms raw market data into atomic, recomputable technical signals. Each indicator is calculated independently using Spark and stored in `fact_indicator` with a clearly defined grain:
+Indicators transform raw market data into atomic, recomputable technical states stored in:
 
 (symbol_id, interval_id, indicator_type, timestamp)
 
 Supported indicators include RSI, MACD, EMA, ADX, Bollinger Bands, ATR, VWAP deviation, and volume-based metrics.
 
----
+### Principles
 
-## Design Principles
-
-- **Atomic Storage** – Each row represents a single indicator value at a single timestamp.  
-- **No Composite Features** – Indicators are not mixed or pre-aggregated.  
-- **Recomputable** – All indicators can be regenerated from `fact_kline`.  
-- **Window-Based Computation** – Rolling and exponential calculations use Spark window functions.  
-- **Partitioned Processing** – Computation is distributed by symbol and interval for scalability.  
-- **Idempotent Writes** – Unique constraints prevent duplicate calculations.
-
----
-
-This design ensures transparency, avoids hidden transformations, and allows clean separation between raw technical signals and higher-level trading logic.
+- Atomic storage  
+- No composite pre-aggregation  
+- Spark window-based computation  
+- Partitioned distributed processing  
+- Fully recomputable from `fact_kline`  
 
 ---
 
 # 6️⃣ Metric Abstraction Layer
 
-The metric layer converts continuous indicator values into structured, configurable trading conditions. Instead of hardcoding strategy rules in application logic, all trading conditions are defined in `dim_metric` and evaluated dynamically into `fact_metric_value`.
+Metrics convert continuous indicator values into structured trading conditions defined in `dim_metric`.
 
 Each metric specifies:
 
-- Anchor indicator (`indicator_type_id`)
-- Threshold range (`threshold_start`, `threshold_end`)
-- Direction logic (ABOVE, BELOW, BETWEEN, TREND_UP, CROSS_UP, etc.)
-- Window size and unit
-- Weight
-- Active flag
+- Anchor indicator  
+- Threshold range  
+- Direction logic  
+- Window configuration  
+- Weight  
+- Active status  
 
----
+Evaluated results are stored in `fact_metric_value`.
 
-## Purpose
+### Purpose
 
-- Separate technical signals from trading logic  
-- Enable configuration-driven strategy design  
-- Allow historical re-evaluation without code changes  
-- Support metric-level experimentation  
-
----
-
-## Data Flow
-
-fact_indicator → metric evaluation → fact_metric_value
-
-Each metric is evaluated per symbol, interval, and timestamp, producing structured conditions (typically binary or weighted values) that are later aggregated in the prediction engine.
-
----
-
-## Design Principles
-
-- **Config-Driven Logic** – Strategy rules live in the database, not in code  
-- **Independent Evaluation** – Metrics are computed separately from scoring  
-- **Reproducible** – Historical metric states remain traceable  
-- **Extensible** – New trading conditions can be added without refactoring  
-
----
-
-This abstraction layer provides the structural foundation for deterministic scoring and controlled strategy experimentation.
+- Config-driven strategy logic  
+- Independent evaluation from scoring  
+- Historical reproducibility  
+- Strategy experimentation without refactoring  
 
 ---
 
 # 7️⃣ Prediction Engine
 
-The prediction engine aggregates evaluated metrics into deterministic trading decisions using a weighted scoring model. BUY and SELL signals are computed independently to avoid directional contamination and ensure structural clarity.
-
----
-
-## Scoring Logic
+The engine aggregates weighted metric outputs into deterministic trading decisions.
 
 buy_score  = Σ(weighted BUY metrics)  
-sell_score = Σ(weighted SELL metrics)
+sell_score = Σ(weighted SELL metrics)  
 
 edge = |buy_score − sell_score|  
-confidence = max(buy_score, sell_score) / MAX_SCORE  
+confidence = max(score) / MAX_SCORE  
 
----
+### Decision Rules
 
-## Decision Rules
+- BUY → buy_score ≥ threshold and dominant  
+- SELL → sell_score ≥ threshold and dominant  
+- SIDEWAY → otherwise  
 
-- **BUY** → buy_score ≥ threshold and buy_score > sell_score  
-- **SELL** → sell_score ≥ threshold and sell_score > buy_score  
-- **SIDEWAY** → otherwise  
+Safeguards include conflict detection, edge gating, and confidence filtering.
 
-Additional safeguards include:
-
-- Conflict detection (simultaneous strong BUY & SELL conditions)  
-- No-trade filters  
-- Minimum edge requirement  
-- Confidence band filtering  
-
----
-
-## Output
-
-Signals are stored in `fact_prediction`, including:
-
-- action  
-- market_score (edge)  
-- confidence_score  
-- structural metric breakdown  
-
----
-
-## Design Principles
-
-- **Deterministic & Explainable** – No black-box models  
-- **Edge-Based Separation** – Clear directional dominance measurement  
-- **Metric Transparency** – Full traceability of contributing conditions  
-- **Decoupled from Backtesting** – Prediction and confirmation are independent  
-
----
-
-This layer produces structured trading hypotheses while preserving full auditability and experimental control.
+Stored in `fact_prediction`.
 
 ---
 
 # 8️⃣ Backtesting & Confirmation Framework
 
-The confirmation framework evaluates trading predictions independently using an adaptive take-profit / stop-loss mechanism within a controlled lookahead window. Prediction and confirmation are strictly decoupled to prevent data leakage.
+Predictions are validated independently using adaptive TP/SL within a controlled lookahead window.
 
----
+### Process
 
-## Confirmation Logic
+1. Define future window  
+2. Compute max/min return  
+3. Apply adaptive TP/SL  
+4. Confirm only if triggered  
 
-For each prediction:
+Results stored in `fact_prediction_result`.
 
-1. Define a future lookahead window (e.g., N hours)
-2. Compute:
-   - max_return
-   - min_return
-3. Apply adaptive TP / SL logic
-4. Confirm only if TP or SL is hit
+### Principles
 
-BUY logic:
-- WIN → price reaches take-profit
-- LOSS → price hits stop-loss
-
-SELL logic:
-- WIN → price drops to take-profit
-- LOSS → price rises to stop-loss
-
-If neither condition is met within the lookahead window, the signal may remain unconfirmed.
-
----
-
-## Adaptive Risk Model
-
-- Strong edge → wider TP / longer lookahead  
-- Weak edge → tighter SL / shorter window  
-- No double confirmation  
-- Idempotent write to result table  
-
----
-
-## Output
-
-Results are stored in `fact_prediction_result`, including:
-
-- pnl_pct  
-- exit_price  
-- result_status  
-- confirmed_at  
-
----
-
-## Design Principles
-
-- **Leakage Prevention** – Prediction and validation separated  
-- **Controlled Lookahead** – No future information leakage  
-- **Adaptive Risk Management** – Reward scales with conviction  
-- **Reproducible Backtesting** – Fully warehouse-driven  
-
----
-
-This framework transforms trading hypotheses into validated performance records while preserving realism and experimental integrity.
+- Leakage prevention  
+- Controlled lookahead  
+- Edge-scaled risk  
+- Idempotent result writing  
 
 ---
 
 # 9️⃣ Analytics & Performance Evaluation
 
-The analytics layer evaluates confirmed trades using structured performance metrics derived directly from warehouse facts. All evaluations are reproducible and based on `fact_prediction` and `fact_prediction_result`.
+Performance evaluation is fully warehouse-driven.
 
----
+### Core Metrics
 
-## Core Metrics
+- Win Rate  
+- Average PnL  
+- Expectancy  
+- Rolling stability (5/10/20)  
+- Equity curve  
+- Drawdown  
 
-- **Win Rate** – Ratio of winning trades  
-- **Average PnL** – Mean percentage return per trade  
-- **Expectancy**  
-  E = WinRate × AvgWin − (1 − WinRate) × AvgLoss  
-- **Rolling Stability** – 5 / 10 / 20 trade rolling win rates  
-- **Equity Curve** – Cumulative capital growth simulation  
-- **Drawdown** – Peak-to-trough capital decline  
+### Regime Analysis
 
----
+Performance segmented by trend, momentum, volatility, and edge strength.
 
-## Regime Analysis
+### Structural Pattern Mining
 
-Performance is analyzed under different structural regimes:
-
-- Trend (TREND_UP / TREND_DOWN)  
-- Momentum (POS / NEG)  
-- Volatility (HIGH / LOW)  
-- Edge strength (STRONG / WEAK)  
-
-This helps assess conditional performance and robustness.
-
----
-
-## Structural Pattern Mining
-
-FP-Growth is applied to confirmed WIN trades to extract:
+FP-Growth extracts:
 
 - Frequent structural conditions  
 - Association rules  
 - Confidence  
-- Lift (edge strength contribution)  
+- Lift  
 
-This validates recurring market structures that support sustained edge.
-
----
-
-## Design Principles
-
-- Fully warehouse-driven analytics  
-- No hidden transformations  
-- Clear separation between signal generation and evaluation  
-- Structural validation beyond simple win rate  
-
----
-
-This layer transforms confirmed trade results into measurable insights, enabling systematic strategy evaluation and structural edge validation.
+Validates recurring market structures supporting sustained edge.
 
 ---
 
@@ -372,28 +231,60 @@ This layer transforms confirmed trade results into measurable insights, enabling
 
 ## Tech Stack
 
-- **Python** – Core language  
-- **PySpark** – Distributed computation (batch & streaming)  
-- **Spark ML (FPGrowth)** – Structural pattern mining  
-- **Kafka** – Real-time market data ingestion  
-- **MySQL 8** – Data Warehouse storage  
-- **Flask** – Analytics API layer  
-- **NumPy / Pandas / Scikit-learn** – Statistical evaluation  
-
----
+- Python  
+- PySpark (batch & streaming)  
+- Spark ML (FPGrowth)  
+- Kafka  
+- MySQL 8  
+- Flask  
+- NumPy / Pandas / Scikit-learn  
 
 ## Engineering Practices
 
-- **Layered Architecture** – Clear separation between ingestion, transformation, prediction, and validation  
-- **Fact-Driven Warehouse Design** – Explicit grain definition for each table  
-- **Idempotent ETL** – Anti-join writes and unique constraints prevent duplication  
-- **UTC Normalization** – Consistent time handling across pipeline  
-- **Window-Based Computation** – Efficient rolling calculations in Spark  
-- **Config-Driven Strategy Logic** – Metrics defined in database, not hardcoded  
-- **Prediction / Confirmation Separation** – Strict leakage prevention  
-- **Traceable Signal Lifecycle** – Full auditability from raw data to confirmed result  
+- Layered architecture  
+- Fact-driven warehouse modeling  
+- Explicit grain control  
+- Idempotent ETL & anti-join writes  
+- UTC normalization  
+- Window-based distributed computation  
+- Config-driven strategy logic  
+- Strict prediction/confirmation separation  
+- Full signal traceability  
 
 ---
 
-This stack and engineering approach ensure scalability, reproducibility, and experimental control, making the system suitable for quantitative research and production-oriented data workflows.
+# 🧠 Skills Demonstrated
 
+## Data Engineering
+
+- Fact/dimension warehouse modeling  
+- Distributed Spark computation  
+- Streaming ingestion with Kafka  
+- Idempotent ETL pipeline design  
+- Time-series grain management  
+
+## Quantitative Modeling
+
+- Deterministic weighted scoring  
+- Edge-based signal separation  
+- Conflict detection logic  
+- Adaptive risk modeling  
+- Lookahead control  
+
+## Research & Validation
+
+- Expectancy and rolling stability evaluation  
+- Equity curve and drawdown analysis  
+- Structural edge mining with FP-Growth  
+- Reproducible warehouse-driven analytics  
+
+---
+
+# 📈 Value Generated
+
+- Converts raw market data into structured trading intelligence  
+- Enables transparent and reproducible experimentation  
+- Produces deterministic, explainable signals  
+- Validates hypotheses with controlled backtesting  
+- Identifies recurring structural conditions supporting sustained edge  
+- Provides scalable foundation for future ML or portfolio-level extensions  
