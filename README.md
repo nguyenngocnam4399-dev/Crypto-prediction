@@ -77,34 +77,6 @@ crypto-pipeline/
 
 ---
 
-## Installation (Docker)
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/crypto-pipeline.git
-   cd crypto-pipeline
-   ```
-
-2. **Start All Services**
-   ```bash
-   docker-compose up -d --build
-   ```
-   **Services included:**
-   - `kafka` (Message streaming platform)
-   - `zookeeper` (Kafka dependency)
-   - `mysql` (Database `thesis`)
-   - `airflow` (Webserver, Scheduler, Worker)
-   - `spark` (Processing engine)
-   - `grafana` (Visualization)
-
-3. **Access Interfaces**
-   - **Airflow UI:** [http://localhost:8080](http://localhost:8080)  
-     *default: airflow / airflow*  
-   - **Kafka UI (optional):** [http://localhost:9021](http://localhost:9021)  
-   - **Grafana UI:** [http://localhost:3000](http://localhost:3000)
-
----
-
 ## Usage Guide
 ## Running the Pipeline
 Below are the steps to execute the full end-to-end data pipeline manually or using Airflow.
