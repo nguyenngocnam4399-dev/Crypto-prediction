@@ -83,6 +83,10 @@ Flask API exposes analytics endpoints for visualization.
 
 This layer supports experimental research and structural edge validation.
 
+---
+
+## Data Warehouse Schema
+![Warehouse ERD](images/warehouse_schema.png)
 
 ---
 
