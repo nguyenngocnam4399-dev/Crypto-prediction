@@ -191,118 +191,208 @@ Each metric is evaluated per symbol, interval, and timestamp, producing structur
 
 This abstraction layer provides the structural foundation for deterministic scoring and controlled strategy experimentation.
 
-## Key Features
+---
 
-| Category | Description |
-|-----------|-------------|
-| **Kafka Integration** | Implements **Producer–Consumer architecture** for real-time message streaming. Crawled data is sent to Kafka topics instead of being stored directly in MySQL. |
-| **News Pipeline** | Producer crawls crypto news (Coindesk, NewsBTC) → sends messages to Kafka → Consumer stores to MySQL. |
-| **Price Pipeline** | Binance price data is pushed into Kafka topic and consumed for processing. |
-| **Indicator Pipeline** | Spark consumes stored data to compute SMA, RSI, and Bollinger Bands. |
-| **Workflow Orchestration** | Airflow coordinates Producer → Consumer → Spark → Visualization. |
-| **Visualization** | Grafana displays both real-time and processed metrics. |
+# 7️⃣ Prediction Engine
+
+The prediction engine aggregates evaluated metrics into deterministic trading decisions using a weighted scoring model. BUY and SELL signals are computed independently to avoid directional contamination and ensure structural clarity.
 
 ---
 
-## Project Structure
-```text
-crypto-pipeline/
-├── dags/
-│   ├── producer_news.py
-│   ├── consumer_news.py
-│   ├── producer_prices.py
-│   ├── consumer_prices.py
-│   └── spark_job.py
-├── sql/
-│   ├── kline_dim_fact.sql
-│   ├── indicator_dim_fact
-│   └── news_dim_fact.sql
-├── docker-compose.yaml
-├── requirements.txt
-└── README.md
-```
+## Scoring Logic
+
+buy_score  = Σ(weighted BUY metrics)  
+sell_score = Σ(weighted SELL metrics)
+
+edge = |buy_score − sell_score|  
+confidence = max(buy_score, sell_score) / MAX_SCORE  
 
 ---
 
-## Technology Stack
+## Decision Rules
 
-| Layer | Tools / Technologies |
-|-------|----------------------|
-| **Message Streaming** | Apache Kafka |
-| **Workflow Orchestration** | Apache Airflow |
-| **Data Processing** | Apache Spark |
-| **Data Storage** | MySQL (Data Warehouse – Dim–Fact Model) |
-| **Data Crawling & NLP** | Python (Requests, BeautifulSoup4, NLTK Vader) |
-| **Visualization** | Grafana |
-| **Deployment** | Docker, Docker Compose |
+- **BUY** → buy_score ≥ threshold and buy_score > sell_score  
+- **SELL** → sell_score ≥ threshold and sell_score > buy_score  
+- **SIDEWAY** → otherwise  
 
----
+Additional safeguards include:
 
-## Usage Guide
-## Running the Pipeline
-Below are the steps to execute the full end-to-end data pipeline manually or using Airflow.
-
-Step	Description
-1️⃣ Start Producers	Run the producer scripts manually to publish data to Kafka topics:
-• producer_news.py → Crawls latest crypto news and sends messages to Kafka topic news_topic.
-• producer_prices.py → Collects Binance price data and sends messages to Kafka topic price_topic.
-2️⃣ Start Consumers	Run the consumer scripts to read and store data:
-• consumer_news.py → Consumes data from news_topic, performs sentiment analysis, and writes results to MySQL.
-• consumer_prices.py → Consumes data from price_topic, cleans and stores price information in MySQL.
-3️⃣ Run Spark Job	Execute spark_job_1.py (either manually or via Airflow DAG spark_indicator) to compute SMA, RSI, and Bollinger Bands from the processed data.
-4️⃣ Visualize in Grafana	Open Grafana to view real-time metrics, technical indicators, and sentiment analytics from the crypto data warehouse.
-
-## Example Outputs
-
-### News Data (`news_fact`)
-| id | title | sentiment_score | tag_name | created_date |
-|----|--------|-----------------|-----------|---------------|
-| 1 | Bitcoin Price Surges | 0.67 | Bitcoin | 2025-09-14 12:00:00 |
-
-### Technical Indicators (`indicator_fact`)
-| id | symbol_id | type | value | timestamp |
-|----|------------|------|--------|------------|
-| 1 | 1 | SMA | 42000.123 | 2025-09-14 12:00:00 |
-| 2 | 1 | RSI | 55.67 | 2025-09-14 12:00:00 |
+- Conflict detection (simultaneous strong BUY & SELL conditions)  
+- No-trade filters  
+- Minimum edge requirement  
+- Confidence band filtering  
 
 ---
 
-## Results
+## Output
 
-✅ **Real-time streaming** between producer and consumer via Kafka.  
-✅ **Fully automated pipeline** orchestrated by Airflow.  
-✅ **Spark integration** for large-scale technical analysis.  
-✅ **Data warehouse** designed for analytical workloads.  
-✅ **Dockerized system** for portable deployment.  
-✅ **Grafana dashboards** showing live crypto trends and sentiment.  
+Signals are stored in `fact_prediction`, including:
 
----
-
-## Limitations & Future Improvements
-
-| Current Limitation | Future Improvement |
-|---------------------|--------------------|
-| Batch-based Spark processing | Add **Spark Structured Streaming** for full real-time analytics |
-| Limited Kafka topic coverage | Expand topics for multiple crypto pairs and sentiment sources |
-| Simple text-based sentiment | Integrate deep learning models (BERT, FinBERT) |
-| MySQL scalability | Move to distributed storage like BigQuery or Snowflake |
+- action  
+- market_score (edge)  
+- confidence_score  
+- structural metric breakdown  
 
 ---
 
-## Dashboard Preview
-![Grafana Dashboard Example](images/grafana.png)
+## Design Principles
+
+- **Deterministic & Explainable** – No black-box models  
+- **Edge-Based Separation** – Clear directional dominance measurement  
+- **Metric Transparency** – Full traceability of contributing conditions  
+- **Decoupled from Backtesting** – Prediction and confirmation are independent  
 
 ---
 
-## Acknowledgments
-- [Apache Kafka](https://kafka.apache.org/)
-- [Apache Airflow](https://airflow.apache.org/)
-- [Apache Spark](https://spark.apache.org/)
-- [NLTK Vader Sentiment](https://www.nltk.org/_modules/nltk/sentiment/vader.html)
-- [Grafana](https://grafana.com/)
+This layer produces structured trading hypotheses while preserving full auditability and experimental control.
 
 ---
 
-## License
-This project is for **educational and research purposes only**.  
-© 2025 Nguyễn Ngọc Nam — Data Engineering Project.
+# 8️⃣ Backtesting & Confirmation Framework
+
+The confirmation framework evaluates trading predictions independently using an adaptive take-profit / stop-loss mechanism within a controlled lookahead window. Prediction and confirmation are strictly decoupled to prevent data leakage.
+
+---
+
+## Confirmation Logic
+
+For each prediction:
+
+1. Define a future lookahead window (e.g., N hours)
+2. Compute:
+   - max_return
+   - min_return
+3. Apply adaptive TP / SL logic
+4. Confirm only if TP or SL is hit
+
+BUY logic:
+- WIN → price reaches take-profit
+- LOSS → price hits stop-loss
+
+SELL logic:
+- WIN → price drops to take-profit
+- LOSS → price rises to stop-loss
+
+If neither condition is met within the lookahead window, the signal may remain unconfirmed.
+
+---
+
+## Adaptive Risk Model
+
+- Strong edge → wider TP / longer lookahead  
+- Weak edge → tighter SL / shorter window  
+- No double confirmation  
+- Idempotent write to result table  
+
+---
+
+## Output
+
+Results are stored in `fact_prediction_result`, including:
+
+- pnl_pct  
+- exit_price  
+- result_status  
+- confirmed_at  
+
+---
+
+## Design Principles
+
+- **Leakage Prevention** – Prediction and validation separated  
+- **Controlled Lookahead** – No future information leakage  
+- **Adaptive Risk Management** – Reward scales with conviction  
+- **Reproducible Backtesting** – Fully warehouse-driven  
+
+---
+
+This framework transforms trading hypotheses into validated performance records while preserving realism and experimental integrity.
+
+---
+
+# 9️⃣ Analytics & Performance Evaluation
+
+The analytics layer evaluates confirmed trades using structured performance metrics derived directly from warehouse facts. All evaluations are reproducible and based on `fact_prediction` and `fact_prediction_result`.
+
+---
+
+## Core Metrics
+
+- **Win Rate** – Ratio of winning trades  
+- **Average PnL** – Mean percentage return per trade  
+- **Expectancy**  
+  E = WinRate × AvgWin − (1 − WinRate) × AvgLoss  
+- **Rolling Stability** – 5 / 10 / 20 trade rolling win rates  
+- **Equity Curve** – Cumulative capital growth simulation  
+- **Drawdown** – Peak-to-trough capital decline  
+
+---
+
+## Regime Analysis
+
+Performance is analyzed under different structural regimes:
+
+- Trend (TREND_UP / TREND_DOWN)  
+- Momentum (POS / NEG)  
+- Volatility (HIGH / LOW)  
+- Edge strength (STRONG / WEAK)  
+
+This helps assess conditional performance and robustness.
+
+---
+
+## Structural Pattern Mining
+
+FP-Growth is applied to confirmed WIN trades to extract:
+
+- Frequent structural conditions  
+- Association rules  
+- Confidence  
+- Lift (edge strength contribution)  
+
+This validates recurring market structures that support sustained edge.
+
+---
+
+## Design Principles
+
+- Fully warehouse-driven analytics  
+- No hidden transformations  
+- Clear separation between signal generation and evaluation  
+- Structural validation beyond simple win rate  
+
+---
+
+This layer transforms confirmed trade results into measurable insights, enabling systematic strategy evaluation and structural edge validation.
+
+---
+
+# 🔟 Tech Stack & Engineering Practices
+
+## Tech Stack
+
+- **Python** – Core language  
+- **PySpark** – Distributed computation (batch & streaming)  
+- **Spark ML (FPGrowth)** – Structural pattern mining  
+- **Kafka** – Real-time market data ingestion  
+- **MySQL 8** – Data Warehouse storage  
+- **Flask** – Analytics API layer  
+- **NumPy / Pandas / Scikit-learn** – Statistical evaluation  
+
+---
+
+## Engineering Practices
+
+- **Layered Architecture** – Clear separation between ingestion, transformation, prediction, and validation  
+- **Fact-Driven Warehouse Design** – Explicit grain definition for each table  
+- **Idempotent ETL** – Anti-join writes and unique constraints prevent duplication  
+- **UTC Normalization** – Consistent time handling across pipeline  
+- **Window-Based Computation** – Efficient rolling calculations in Spark  
+- **Config-Driven Strategy Logic** – Metrics defined in database, not hardcoded  
+- **Prediction / Confirmation Separation** – Strict leakage prevention  
+- **Traceable Signal Lifecycle** – Full auditability from raw data to confirmed result  
+
+---
+
+This stack and engineering approach ensure scalability, reproducibility, and experimental control, making the system suitable for quantitative research and production-oriented data workflows.
+
