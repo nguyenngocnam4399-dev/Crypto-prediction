@@ -1,432 +1,184 @@
-<div id="top">
+# Crypto Data Pipeline (with Apache Kafka)
 
-<!-- HEADER STYLE: CLASSIC -->
-<div align="center">
-
-<img src="readmeai/assets/logos/purple.svg" width="30%" style="position: relative; top: 0; right: 0;" alt="Project Logo"/>
-
-# CRYPTO-PREDICTION
-
-<em></em>
-
-<!-- BADGES -->
-<img src="https://img.shields.io/github/license/nguyenngocnam4399-dev/Crypto-Prediction?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
-<img src="https://img.shields.io/github/last-commit/nguyenngocnam4399-dev/Crypto-Prediction?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-<img src="https://img.shields.io/github/languages/top/nguyenngocnam4399-dev/Crypto-Prediction?style=default&color=0080ff" alt="repo-top-language">
-<img src="https://img.shields.io/github/languages/count/nguyenngocnam4399-dev/Crypto-Prediction?style=default&color=0080ff" alt="repo-language-count">
-
-<!-- default option, no dependency badges. -->
-
-
-<!-- default option, no dependency badges. -->
-
-</div>
-<br>
+### Data Engineering Capstone Project  
+**Author:** Nguyễn Ngọc Nam  
+**Mentor:** Cù Hữu Hoàng  
+**Location:** Ho Chi Minh City, Vietnam — 2025  
 
 ---
 
-## Table of Contents
+## About This Project
+This project was developed as part of my **Data Engineering capstone**, aiming to build a **real-world data pipeline** that automates the entire process from **data ingestion to visualization**.
 
-- [Table of Contents](#table-of-contents)
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-    - [Project Index](#project-index)
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Testing](#testing)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+Through this project, I applied key data engineering concepts such as:
+- Workflow orchestration with **Apache Airflow**  
+- Distributed data processing using **Apache Spark**  
+- **Streaming integration** using **Apache Kafka**  
+- **ETL and warehouse design** with the Dim–Fact model  
+- **Docker-based deployment** for consistent and portable environments  
+
+It demonstrates my ability to design **end-to-end pipelines**, integrate **multiple data sources**, and process streaming data in real-time.
 
 ---
 
 ## Overview
+**Crypto Data Pipeline** is an **end-to-end Data Engineering system** designed to automatically **collect, stream, process, analyze, and visualize** cryptocurrency market data.  
+The system integrates **Apache Kafka** to enable **real-time data flow** between crawlers (producers) and consumers, which process and store the data for analytics and visualization.
 
-
+**Main Objectives:**
+- Enable **real-time ingestion** using Apache Kafka.  
+- Automate **data transformation and analysis** using Airflow and Spark.  
+- Combine **quantitative (price)** and **qualitative (news sentiment)** data.  
+- Visualize data and indicators using Grafana.  
 
 ---
 
-## Features
+## System Architecture
 
-<code>❯ REPLACE-ME</code>
+![System Architecture](images/System_Architecture.png)
+
+---
+
+## Key Features
+
+| Category | Description |
+|-----------|-------------|
+| **Kafka Integration** | Implements **Producer–Consumer architecture** for real-time message streaming. Crawled data is sent to Kafka topics instead of being stored directly in MySQL. |
+| **News Pipeline** | Producer crawls crypto news (Coindesk, NewsBTC) → sends messages to Kafka → Consumer stores to MySQL. |
+| **Price Pipeline** | Binance price data is pushed into Kafka topic and consumed for processing. |
+| **Indicator Pipeline** | Spark consumes stored data to compute SMA, RSI, and Bollinger Bands. |
+| **Workflow Orchestration** | Airflow coordinates Producer → Consumer → Spark → Visualization. |
+| **Visualization** | Grafana displays both real-time and processed metrics. |
 
 ---
 
 ## Project Structure
-
-```sh
-└── Crypto-Prediction/
-    ├── Crypto
-    │   ├── app.py
-    │   ├── indicator_engine
-    │   ├── main.py
-    │   ├── producer_binance_kraft.py
-    │   ├── raw_to_staging.py
-    │   ├── spark_job_fp_growth.py
-    │   ├── spark_stream_kafka_to_parquet.py
-    │   └── staging_to_fact.py
-    ├── News
-    │   ├── crawl.py
-    │   └── spark_job_news_coin_mapping.py
-    ├── crawl_news.py
-    └── crypto_pipeline.py
+```text
+crypto-pipeline/
+├── dags/
+│   ├── producer_news.py
+│   ├── consumer_news.py
+│   ├── producer_prices.py
+│   ├── consumer_prices.py
+│   └── spark_job.py
+├── sql/
+│   ├── kline_dim_fact.sql
+│   ├── indicator_dim_fact
+│   └── news_dim_fact.sql
+├── docker-compose.yaml
+├── requirements.txt
+└── README.md
 ```
 
-### Project Index
+---
 
-<details open>
-	<summary><b><code>CRYPTO-PREDICTION/</code></b></summary>
-	<!-- __root__ Submodule -->
-	<details>
-		<summary><b>__root__</b></summary>
-		<blockquote>
-			<div class='directory-path' style='padding: 8px 0; color: #666;'>
-				<code><b>⦿ __root__</b></code>
-			<table style='width: 100%; border-collapse: collapse;'>
-			<thead>
-				<tr style='background-color: #f8f9fa;'>
-					<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-					<th style='text-align: left; padding: 8px;'>Summary</th>
-				</tr>
-			</thead>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/crawl_news.py'>crawl_news.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/crypto_pipeline.py'>crypto_pipeline.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-			</table>
-		</blockquote>
-	</details>
-	<!-- News Submodule -->
-	<details>
-		<summary><b>News</b></summary>
-		<blockquote>
-			<div class='directory-path' style='padding: 8px 0; color: #666;'>
-				<code><b>⦿ News</b></code>
-			<table style='width: 100%; border-collapse: collapse;'>
-			<thead>
-				<tr style='background-color: #f8f9fa;'>
-					<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-					<th style='text-align: left; padding: 8px;'>Summary</th>
-				</tr>
-			</thead>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/News/crawl.py'>crawl.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/News/spark_job_news_coin_mapping.py'>spark_job_news_coin_mapping.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-			</table>
-		</blockquote>
-	</details>
-	<!-- Crypto Submodule -->
-	<details>
-		<summary><b>Crypto</b></summary>
-		<blockquote>
-			<div class='directory-path' style='padding: 8px 0; color: #666;'>
-				<code><b>⦿ Crypto</b></code>
-			<table style='width: 100%; border-collapse: collapse;'>
-			<thead>
-				<tr style='background-color: #f8f9fa;'>
-					<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-					<th style='text-align: left; padding: 8px;'>Summary</th>
-				</tr>
-			</thead>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/app.py'>app.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/producer_binance_kraft.py'>producer_binance_kraft.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/spark_stream_kafka_to_parquet.py'>spark_stream_kafka_to_parquet.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/raw_to_staging.py'>raw_to_staging.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/main.py'>main.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/spark_job_fp_growth.py'>spark_job_fp_growth.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-				<tr style='border-bottom: 1px solid #eee;'>
-					<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/staging_to_fact.py'>staging_to_fact.py</a></b></td>
-					<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-				</tr>
-			</table>
-			<!-- indicator_engine Submodule -->
-			<details>
-				<summary><b>indicator_engine</b></summary>
-				<blockquote>
-					<div class='directory-path' style='padding: 8px 0; color: #666;'>
-						<code><b>⦿ Crypto.indicator_engine</b></code>
-					<table style='width: 100%; border-collapse: collapse;'>
-					<thead>
-						<tr style='background-color: #f8f9fa;'>
-							<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-							<th style='text-align: left; padding: 8px;'>Summary</th>
-						</tr>
-					</thead>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_prediction_engine_bnb.py'>1_prediction_engine_bnb.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_backtest_engine_btc.py'>1_backtest_engine_btc.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_spark_job_metric_value_eth.py'>1_spark_job_metric_value_eth.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_prediction_engine_eth.py'>1_prediction_engine_eth.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/main.py'>main.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_backtest_engine_eth.py'>1_backtest_engine_eth.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_prediction_engine_btc.py'>1_prediction_engine_btc.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_spark_job_metric_value_btc.py'>1_spark_job_metric_value_btc.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_backtest_engine_bnb.py'>1_backtest_engine_bnb.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/1_spark_job_metric_value_bnb.py'>1_spark_job_metric_value_bnb.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-						<tr style='border-bottom: 1px solid #eee;'>
-							<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/config.py'>config.py</a></b></td>
-							<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-						</tr>
-					</table>
-					<!-- core Submodule -->
-					<details>
-						<summary><b>core</b></summary>
-						<blockquote>
-							<div class='directory-path' style='padding: 8px 0; color: #666;'>
-								<code><b>⦿ Crypto.indicator_engine.core</b></code>
-							<table style='width: 100%; border-collapse: collapse;'>
-							<thead>
-								<tr style='background-color: #f8f9fa;'>
-									<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-									<th style='text-align: left; padding: 8px;'>Summary</th>
-								</tr>
-							</thead>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/core/loader.py'>loader.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/core/registry.py'>registry.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/core/init.py'>init.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/core/writer.py'>writer.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-							</table>
-						</blockquote>
-					</details>
-					<!-- indicators Submodule -->
-					<details>
-						<summary><b>indicators</b></summary>
-						<blockquote>
-							<div class='directory-path' style='padding: 8px 0; color: #666;'>
-								<code><b>⦿ Crypto.indicator_engine.indicators</b></code>
-							<table style='width: 100%; border-collapse: collapse;'>
-							<thead>
-								<tr style='background-color: #f8f9fa;'>
-									<th style='width: 30%; text-align: left; padding: 8px;'>File Name</th>
-									<th style='text-align: left; padding: 8px;'>Summary</th>
-								</tr>
-							</thead>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/trend_volatility.py'>trend_volatility.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/trend_strength.py'>trend_strength.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/momentum.py'>momentum.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/volume.py'>volume.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/init.py'>init.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/supertrend.py'>supertrend.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/trend_filter.py'>trend_filter.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-								<tr style='border-bottom: 1px solid #eee;'>
-									<td style='padding: 8px;'><b><a href='https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/master/Crypto/indicator_engine/indicators/trend_utils.py'>trend_utils.py</a></b></td>
-									<td style='padding: 8px;'>Code>❯ REPLACE-ME</code></td>
-								</tr>
-							</table>
-						</blockquote>
-					</details>
-				</blockquote>
-			</details>
-		</blockquote>
-	</details>
-</details>
+## Technology Stack
+
+| Layer | Tools / Technologies |
+|-------|----------------------|
+| **Message Streaming** | Apache Kafka |
+| **Workflow Orchestration** | Apache Airflow |
+| **Data Processing** | Apache Spark |
+| **Data Storage** | MySQL (Data Warehouse – Dim–Fact Model) |
+| **Data Crawling & NLP** | Python (Requests, BeautifulSoup4, NLTK Vader) |
+| **Visualization** | Grafana |
+| **Deployment** | Docker, Docker Compose |
 
 ---
 
-## Getting Started
+## Installation (Docker)
 
-### Prerequisites
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/crypto-pipeline.git
+   cd crypto-pipeline
+   ```
 
-This project requires the following dependencies:
+2. **Start All Services**
+   ```bash
+   docker-compose up -d --build
+   ```
+   **Services included:**
+   - `kafka` (Message streaming platform)
+   - `zookeeper` (Kafka dependency)
+   - `mysql` (Database `thesis`)
+   - `airflow` (Webserver, Scheduler, Worker)
+   - `spark` (Processing engine)
+   - `grafana` (Visualization)
 
-- **Programming Language:** Python
-
-### Installation
-
-Build Crypto-Prediction from the source and intsall dependencies:
-
-1. **Clone the repository:**
-
-    ```sh
-    ❯ git clone https://github.com/nguyenngocnam4399-dev/Crypto-Prediction
-    ```
-
-2. **Navigate to the project directory:**
-
-    ```sh
-    ❯ cd Crypto-Prediction
-    ```
-
-3. **Install the dependencies:**
-
-echo 'INSERT-INSTALL-COMMAND-HERE'
-
-### Usage
-
-Run the project with:
-
-echo 'INSERT-RUN-COMMAND-HERE'
-
-### Testing
-
-Crypto-prediction uses the {__test_framework__} test framework. Run the test suite with:
-
-echo 'INSERT-TEST-COMMAND-HERE'
+3. **Access Interfaces**
+   - **Airflow UI:** [http://localhost:8080](http://localhost:8080)  
+     *default: airflow / airflow*  
+   - **Kafka UI (optional):** [http://localhost:9021](http://localhost:9021)  
+   - **Grafana UI:** [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Roadmap
+## Usage Guide
+## Running the Pipeline
+Below are the steps to execute the full end-to-end data pipeline manually or using Airflow.
 
-- [X] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
+Step	Description
+1️⃣ Start Producers	Run the producer scripts manually to publish data to Kafka topics:
+• producer_news.py → Crawls latest crypto news and sends messages to Kafka topic news_topic.
+• producer_prices.py → Collects Binance price data and sends messages to Kafka topic price_topic.
+2️⃣ Start Consumers	Run the consumer scripts to read and store data:
+• consumer_news.py → Consumes data from news_topic, performs sentiment analysis, and writes results to MySQL.
+• consumer_prices.py → Consumes data from price_topic, cleans and stores price information in MySQL.
+3️⃣ Run Spark Job	Execute spark_job_1.py (either manually or via Airflow DAG spark_indicator) to compute SMA, RSI, and Bollinger Bands from the processed data.
+4️⃣ Visualize in Grafana	Open Grafana to view real-time metrics, technical indicators, and sentiment analytics from the crypto data warehouse.
 
----
+## Example Outputs
 
-## Contributing
+### News Data (`news_fact`)
+| id | title | sentiment_score | tag_name | created_date |
+|----|--------|-----------------|-----------|---------------|
+| 1 | Bitcoin Price Surges | 0.67 | Bitcoin | 2025-09-14 12:00:00 |
 
-- **💬 [Join the Discussions](https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/discussions)**: Share your insights, provide feedback, or ask questions.
-- **🐛 [Report Issues](https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/issues)**: Submit bugs found or log feature requests for the `Crypto-Prediction` project.
-- **💡 [Submit Pull Requests](https://github.com/nguyenngocnam4399-dev/Crypto-Prediction/blob/main/CONTRIBUTING.md)**: Review open PRs, and submit your own PRs.
-
-<details closed>
-<summary>Contributing Guidelines</summary>
-
-1. **Fork the Repository**: Start by forking the project repository to your github account.
-2. **Clone Locally**: Clone the forked repository to your local machine using a git client.
-   ```sh
-   git clone https://github.com/nguyenngocnam4399-dev/Crypto-Prediction
-   ```
-3. **Create a New Branch**: Always work on a new branch, giving it a descriptive name.
-   ```sh
-   git checkout -b new-feature-x
-   ```
-4. **Make Your Changes**: Develop and test your changes locally.
-5. **Commit Your Changes**: Commit with a clear message describing your updates.
-   ```sh
-   git commit -m 'Implemented new feature x.'
-   ```
-6. **Push to github**: Push the changes to your forked repository.
-   ```sh
-   git push origin new-feature-x
-   ```
-7. **Submit a Pull Request**: Create a PR against the original project repository. Clearly describe the changes and their motivations.
-8. **Review**: Once your PR is reviewed and approved, it will be merged into the main branch. Congratulations on your contribution!
-</details>
-
-<details closed>
-<summary>Contributor Graph</summary>
-<br>
-<p align="left">
-   <a href="https://github.com{/nguyenngocnam4399-dev/Crypto-Prediction/}graphs/contributors">
-      <img src="https://contrib.rocks/image?repo=nguyenngocnam4399-dev/Crypto-Prediction">
-   </a>
-</p>
-</details>
+### Technical Indicators (`indicator_fact`)
+| id | symbol_id | type | value | timestamp |
+|----|------------|------|--------|------------|
+| 1 | 1 | SMA | 42000.123 | 2025-09-14 12:00:00 |
+| 2 | 1 | RSI | 55.67 | 2025-09-14 12:00:00 |
 
 ---
 
-## License
+## Results
 
-Crypto-prediction is protected under the [LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+✅ **Real-time streaming** between producer and consumer via Kafka.  
+✅ **Fully automated pipeline** orchestrated by Airflow.  
+✅ **Spark integration** for large-scale technical analysis.  
+✅ **Data warehouse** designed for analytical workloads.  
+✅ **Dockerized system** for portable deployment.  
+✅ **Grafana dashboards** showing live crypto trends and sentiment.  
+
+---
+
+## Limitations & Future Improvements
+
+| Current Limitation | Future Improvement |
+|---------------------|--------------------|
+| Batch-based Spark processing | Add **Spark Structured Streaming** for full real-time analytics |
+| Limited Kafka topic coverage | Expand topics for multiple crypto pairs and sentiment sources |
+| Simple text-based sentiment | Integrate deep learning models (BERT, FinBERT) |
+| MySQL scalability | Move to distributed storage like BigQuery or Snowflake |
+
+---
+
+## Dashboard Preview
+![Grafana Dashboard Example](images/grafana.png)
 
 ---
 
 ## Acknowledgments
-
-- Credit `contributors`, `inspiration`, `references`, etc.
-
-<div align="right">
-
-[![][back-to-top]](#top)
-
-</div>
-
-
-[back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square
-
+- [Apache Kafka](https://kafka.apache.org/)
+- [Apache Airflow](https://airflow.apache.org/)
+- [Apache Spark](https://spark.apache.org/)
+- [NLTK Vader Sentiment](https://www.nltk.org/_modules/nltk/sentiment/vader.html)
+- [Grafana](https://grafana.com/)
 
 ---
+
+## License
+This project is for **educational and research purposes only**.  
+© 2025 Nguyễn Ngọc Nam — Data Engineering Project.
