@@ -7,12 +7,12 @@
 
 ---
 
-## About This Project
+## 1️⃣ Introduction
 This project was developed to design a structured, scalable, and empirically testable quantitative trading research system. It standardizes the entire workflow from raw market data, technical indicators, and logical conditions (metrics), to trading decisions and performance confirmation, ensuring clear separation between processing layers to prevent data leakage. Instead of relying on opaque machine learning models, the system implements a deterministic scoring mechanism based on weighted metrics and the concept of edge, allowing transparent evaluation of directional dominance between buyers and sellers. From a technical perspective, the Data Warehouse architecture follows a fact-driven design with clearly defined grain, idempotent ETL processes, and full traceability of the signal lifecycle. Beyond signal generation, the platform also mines recurring market structures using FP-Growth to assess the sustainability of edge. Overall, this framework prioritizes transparency, scalability, and experimental validation over short-term optimization or overfitting.
 
 ---
 
-## 2 Overview
+## 2️⃣ Overview
 This project implements an end-to-end quantitative trading research pipeline built on a layered Data Warehouse architecture. It transforms real-time crypto market data into atomic indicators, configurable trading metrics, and deterministic buy/sell signals through a weighted scoring engine. Signals are independently validated via adaptive backtesting and further analyzed using structural pattern mining (FP-Growth) to assess edge sustainability. The system prioritizes transparency, reproducibility, and extensible research design.  
 
 ---
