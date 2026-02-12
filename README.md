@@ -22,6 +22,38 @@ The platform implements an end-to-end quantitative research pipeline orchestrate
 
 ---
 
+# 🎯 System Outputs & User Value
+
+This platform delivers multiple layers of value to quantitative researchers and trading system developers:
+
+## 1. Explainable Trading Signals
+- Deterministic BUY / SELL decisions  
+- Edge and confidence scoring  
+- Full transparency of contributing metrics  
+- No black-box logic  
+
+## 2. Controlled Performance Evaluation
+- Leakage-safe confirmation framework  
+- Adaptive TP/SL risk modeling  
+- Expectancy, drawdown, rolling stability analysis  
+- Equity curve simulation  
+
+## 3. Structural Market Insights
+- Regime-dependent performance segmentation  
+- FP-Growth structural pattern mining  
+- Lift-based edge validation  
+- Identification of recurring market conditions  
+
+## 4. Scalable Research Infrastructure
+- Warehouse-driven experimentation  
+- Configurable metric logic  
+- DAG-based orchestration  
+- Fully reproducible signal lifecycle  
+
+The system transforms raw market data into structured trading intelligence while maintaining transparency, scalability, and experimental control.
+
+---
+
 # 3️⃣ System Architecture
 
 ![System Architecture](images/System_Architecture.png)
@@ -86,7 +118,7 @@ The entire workflow is coordinated using **Apache Airflow DAGs**.
 
 - Dependency-controlled execution of Spark jobs  
 - Scheduled metric computation, prediction, and confirmation  
-- Modular DAG structure per symbol / pipeline stage  
+- Modular DAG structure per pipeline stage  
 - Retry and failure handling  
 - Containerized deployment (Docker Compose)  
 - CeleryExecutor for distributed task execution  
@@ -112,16 +144,12 @@ Supports systematic edge validation.
 
 The warehouse follows a fact-driven layered model. Market data, indicators, metrics, predictions, and confirmation results are stored in separate fact tables with explicitly defined grain to ensure traceability and reproducibility.
 
----
-
 ## Core Dimensions
 
 - `dim_symbol` – tradable assets  
 - `dim_interval` – timeframe registry  
 - `dim_indicator_type` – atomic indicator definitions  
 - `dim_metric` – configurable trading logic  
-
----
 
 ## Fact Layers
 
@@ -132,8 +160,6 @@ The warehouse follows a fact-driven layered model. Market data, indicators, metr
 | `fact_metric_value`      | (symbol, interval, metric, calculating_at) | Logical conditions |
 | `fact_prediction`        | (symbol, interval, predicting_at)          | Trading hypothesis |
 | `fact_prediction_result` | (prediction_id)                            | Realized outcome |
-
----
 
 ### Design Principles
 
@@ -178,13 +204,6 @@ Each metric specifies:
 
 Evaluated results are stored in `fact_metric_value`.
 
-### Purpose
-
-- Config-driven strategy logic  
-- Independent evaluation from scoring  
-- Historical reproducibility  
-- Strategy experimentation without refactoring  
-
 ---
 
 # 7️⃣ Prediction Engine
@@ -195,19 +214,7 @@ sell_score = Σ(weighted SELL metrics)
 edge = |buy_score − sell_score|  
 confidence = max(score) / MAX_SCORE  
 
-### Decision Rules
-
-- BUY → dominant and above threshold  
-- SELL → dominant and above threshold  
-- SIDEWAY → otherwise  
-
-Safeguards:
-
-- Conflict detection  
-- Edge gating  
-- Confidence filtering  
-
-Stored in `fact_prediction`.
+Decision logic includes dominance thresholding, conflict detection, and edge gating. Results are stored in `fact_prediction`.
 
 ---
 
@@ -215,17 +222,9 @@ Stored in `fact_prediction`.
 
 Predictions are validated independently using adaptive TP/SL within a controlled lookahead window.
 
-### Process
-
-1. Define future window  
-2. Compute max/min return  
-3. Apply adaptive TP/SL  
-4. Confirm only if triggered  
-
 Results stored in `fact_prediction_result`.
 
-### Principles
-
+Principles:
 - Leakage prevention  
 - Controlled lookahead  
 - Edge-scaled risk  
@@ -237,8 +236,7 @@ Results stored in `fact_prediction_result`.
 
 Performance evaluation is fully warehouse-driven.
 
-### Core Metrics
-
+Core metrics:
 - Win Rate  
 - Average PnL  
 - Expectancy  
@@ -246,13 +244,7 @@ Performance evaluation is fully warehouse-driven.
 - Equity curve  
 - Drawdown  
 
-### Regime Analysis
-
-Performance segmented by trend, momentum, volatility, and edge strength.
-
-### Structural Pattern Mining
-
-FP-Growth extracts frequent structural conditions, association rules, confidence, and lift to validate sustained edge.
+FP-Growth mining extracts frequent structural conditions, association rules, confidence, and lift to validate sustained edge.
 
 ---
 
@@ -268,8 +260,6 @@ FP-Growth extracts frequent structural conditions, association rules, confidence
 - MySQL 8  
 - Flask  
 - NumPy / Pandas / Scikit-learn  
-
----
 
 ## Engineering Practices
 
@@ -289,16 +279,13 @@ FP-Growth extracts frequent structural conditions, association rules, confidence
 # 🧠 Skills Demonstrated
 
 ## Data Engineering
-
 - End-to-end streaming + batch pipeline design  
 - Apache Airflow DAG orchestration  
 - Distributed Spark computation  
 - Fact/dimension warehouse modeling  
 - Idempotent ETL architecture  
-- Time-series data management  
 
 ## Quantitative Modeling
-
 - Deterministic weighted scoring  
 - Edge-based signal separation  
 - Conflict detection logic  
@@ -306,7 +293,6 @@ FP-Growth extracts frequent structural conditions, association rules, confidence
 - Lookahead leakage prevention  
 
 ## Research & Validation
-
 - Expectancy and rolling stability analysis  
 - Equity curve and drawdown evaluation  
 - Structural edge mining with FP-Growth  
