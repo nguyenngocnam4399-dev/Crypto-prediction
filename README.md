@@ -1,4 +1,5 @@
-# 🚀 Crypto Data Pipeline with Deterministic Quant Research Framework  
+# 🚀 Deterministic Quantitative Trading Research Platform  
+### Production-Grade Crypto Data Pipeline with Structured Edge Validation  
 
 ### Data Engineering Capstone Project  
 **Author:** Nguyễn Ngọc Nam  
@@ -9,15 +10,15 @@
 
 # 1️⃣ Introduction
 
-This project designs a structured, scalable, and empirically testable quantitative trading research framework. It standardizes the full lifecycle of a trading signal—from raw market data ingestion, technical indicator computation, and metric abstraction, to deterministic prediction and independent confirmation—while strictly separating processing layers to prevent data leakage.
+This project designs a structured, scalable, and empirically testable quantitative trading research framework. It standardizes the full lifecycle of a trading signal—from real-time market ingestion, technical indicator computation, and metric abstraction, to deterministic prediction and independent confirmation—while strictly separating processing layers to prevent data leakage.
 
-Instead of relying on opaque machine learning models, the system implements a weighted, metric-driven scoring engine based on the concept of **edge**, allowing transparent evaluation of directional dominance between buyers and sellers. The architecture follows a fact-driven Data Warehouse design with clearly defined grain, idempotent ETL processes, and full signal traceability. Structural pattern mining (FP-Growth) is applied to validated trades to assess edge sustainability. The framework prioritizes transparency, reproducibility, and experimental rigor over short-term optimization.
+Instead of relying on opaque machine learning models, the system implements a weighted, metric-driven scoring engine based on the concept of **edge**, allowing transparent evaluation of directional dominance between buyers and sellers. The architecture follows a fact-driven Data Warehouse design with explicit grain definition, idempotent ETL processes, and full signal traceability. Structural pattern mining (FP-Growth) is applied to validated trades to assess edge sustainability. The framework prioritizes transparency, reproducibility, and experimental rigor over short-term optimization.
 
 ---
 
 # 2️⃣ Overview
 
-The platform implements an end-to-end quantitative research pipeline built on a layered Data Warehouse architecture. Real-time crypto market data is transformed into atomic indicators, configurable trading metrics, and deterministic buy/sell signals. Signals are validated via adaptive backtesting and analyzed using structural pattern mining to measure performance robustness and recurring market structures.
+The platform implements an end-to-end quantitative research pipeline orchestrated by **Apache Airflow** and built on a layered Data Warehouse architecture. Real-time crypto market data is transformed into atomic indicators, configurable trading metrics, and deterministic buy/sell signals. Signals are validated via adaptive backtesting and analyzed using structural pattern mining to measure performance robustness and recurring market structures.
 
 ---
 
@@ -25,17 +26,21 @@ The platform implements an end-to-end quantitative research pipeline built on a 
 
 ![System Architecture](images/System_Architecture.png)
 
-The system follows a layered architecture that separates ingestion, transformation, signal modeling, validation, and analytics to ensure scalability and experimental control.
+The system follows a layered architecture separating ingestion, transformation, signal modeling, orchestration, validation, and analytics to ensure scalability, reproducibility, and controlled experimentation.
 
-### 1. Data Ingestion
+---
+
+## 1. Data Ingestion
 
 - Kafka streams real-time OHLCV market data  
 - Spark Streaming processes and normalizes records  
 - Clean data stored in `fact_kline`  
 
-Establishes immutable market truth.
+Establishes immutable time-series market truth.
 
-### 2. Indicator Computation
+---
+
+## 2. Indicator Computation
 
 - Atomic indicators (RSI, MACD, EMA, ADX, BB, VWAP, ATR, etc.) computed via Spark  
 - Stored independently in `fact_indicator`  
@@ -43,7 +48,9 @@ Establishes immutable market truth.
 
 Ensures transparency and recomputability.
 
-### 3. Metric Abstraction
+---
+
+## 3. Metric Abstraction
 
 - Logical trading conditions defined in `dim_metric`  
 - Evaluated results stored in `fact_metric_value`  
@@ -51,7 +58,9 @@ Ensures transparency and recomputability.
 
 Enables configuration-driven strategy design.
 
-### 4. Prediction Engine
+---
+
+## 4. Prediction Engine
 
 - Independent BUY and SELL scoring  
 - Edge and confidence calculation  
@@ -59,7 +68,9 @@ Enables configuration-driven strategy design.
 
 Deterministic, explainable, and auditable.
 
-### 5. Backtesting & Confirmation
+---
+
+## 5. Backtesting & Confirmation
 
 - Adaptive TP/SL within controlled lookahead window  
 - Results written to `fact_prediction_result`  
@@ -67,7 +78,24 @@ Deterministic, explainable, and auditable.
 
 Prevents leakage and ensures realistic evaluation.
 
-### 6. Analytics & Pattern Mining
+---
+
+## 6. Orchestration Layer (Apache Airflow)
+
+The entire workflow is coordinated using **Apache Airflow DAGs**.
+
+- Dependency-controlled execution of Spark jobs  
+- Scheduled metric computation, prediction, and confirmation  
+- Modular DAG structure per symbol / pipeline stage  
+- Retry and failure handling  
+- Containerized deployment (Docker Compose)  
+- CeleryExecutor for distributed task execution  
+
+Airflow ensures reproducible, production-ready orchestration across ingestion, transformation, scoring, validation, and analytics layers.
+
+---
+
+## 7. Analytics & Pattern Mining
 
 - Equity curve, rolling stability, expectancy metrics  
 - Regime-based performance analysis  
@@ -84,12 +112,16 @@ Supports systematic edge validation.
 
 The warehouse follows a fact-driven layered model. Market data, indicators, metrics, predictions, and confirmation results are stored in separate fact tables with explicitly defined grain to ensure traceability and reproducibility.
 
+---
+
 ## Core Dimensions
 
 - `dim_symbol` – tradable assets  
 - `dim_interval` – timeframe registry  
 - `dim_indicator_type` – atomic indicator definitions  
 - `dim_metric` – configurable trading logic  
+
+---
 
 ## Fact Layers
 
@@ -100,6 +132,8 @@ The warehouse follows a fact-driven layered model. Market data, indicators, metr
 | `fact_metric_value`      | (symbol, interval, metric, calculating_at) | Logical conditions |
 | `fact_prediction`        | (symbol, interval, predicting_at)          | Trading hypothesis |
 | `fact_prediction_result` | (prediction_id)                            | Realized outcome |
+
+---
 
 ### Design Principles
 
@@ -155,8 +189,6 @@ Evaluated results are stored in `fact_metric_value`.
 
 # 7️⃣ Prediction Engine
 
-The engine aggregates weighted metric outputs into deterministic trading decisions.
-
 buy_score  = Σ(weighted BUY metrics)  
 sell_score = Σ(weighted SELL metrics)  
 
@@ -165,11 +197,15 @@ confidence = max(score) / MAX_SCORE
 
 ### Decision Rules
 
-- BUY → buy_score ≥ threshold and dominant  
-- SELL → sell_score ≥ threshold and dominant  
+- BUY → dominant and above threshold  
+- SELL → dominant and above threshold  
 - SIDEWAY → otherwise  
 
-Safeguards include conflict detection, edge gating, and confidence filtering.
+Safeguards:
+
+- Conflict detection  
+- Edge gating  
+- Confidence filtering  
 
 Stored in `fact_prediction`.
 
@@ -206,7 +242,7 @@ Performance evaluation is fully warehouse-driven.
 - Win Rate  
 - Average PnL  
 - Expectancy  
-- Rolling stability (5/10/20)  
+- Rolling stability  
 - Equity curve  
 - Drawdown  
 
@@ -216,14 +252,7 @@ Performance segmented by trend, momentum, volatility, and edge strength.
 
 ### Structural Pattern Mining
 
-FP-Growth extracts:
-
-- Frequent structural conditions  
-- Association rules  
-- Confidence  
-- Lift  
-
-Validates recurring market structures supporting sustained edge.
+FP-Growth extracts frequent structural conditions, association rules, confidence, and lift to validate sustained edge.
 
 ---
 
@@ -233,11 +262,14 @@ Validates recurring market structures supporting sustained edge.
 
 - Python  
 - PySpark (batch & streaming)  
+- Apache Kafka  
+- Apache Airflow (CeleryExecutor)  
 - Spark ML (FPGrowth)  
-- Kafka  
 - MySQL 8  
 - Flask  
 - NumPy / Pandas / Scikit-learn  
+
+---
 
 ## Engineering Practices
 
@@ -249,7 +281,8 @@ Validates recurring market structures supporting sustained edge.
 - Window-based distributed computation  
 - Config-driven strategy logic  
 - Strict prediction/confirmation separation  
-- Full signal traceability  
+- DAG-based workflow orchestration  
+- Containerized deployment  
 
 ---
 
@@ -257,11 +290,12 @@ Validates recurring market structures supporting sustained edge.
 
 ## Data Engineering
 
-- Fact/dimension warehouse modeling  
+- End-to-end streaming + batch pipeline design  
+- Apache Airflow DAG orchestration  
 - Distributed Spark computation  
-- Streaming ingestion with Kafka  
-- Idempotent ETL pipeline design  
-- Time-series grain management  
+- Fact/dimension warehouse modeling  
+- Idempotent ETL architecture  
+- Time-series data management  
 
 ## Quantitative Modeling
 
@@ -269,22 +303,22 @@ Validates recurring market structures supporting sustained edge.
 - Edge-based signal separation  
 - Conflict detection logic  
 - Adaptive risk modeling  
-- Lookahead control  
+- Lookahead leakage prevention  
 
 ## Research & Validation
 
-- Expectancy and rolling stability evaluation  
-- Equity curve and drawdown analysis  
+- Expectancy and rolling stability analysis  
+- Equity curve and drawdown evaluation  
 - Structural edge mining with FP-Growth  
-- Reproducible warehouse-driven analytics  
+- Fully reproducible warehouse-driven experimentation  
 
 ---
 
 # 📈 Value Generated
 
 - Converts raw market data into structured trading intelligence  
-- Enables transparent and reproducible experimentation  
-- Produces deterministic, explainable signals  
-- Validates hypotheses with controlled backtesting  
-- Identifies recurring structural conditions supporting sustained edge  
-- Provides scalable foundation for future ML or portfolio-level extensions  
+- Enables deterministic and explainable signal modeling  
+- Validates trading hypotheses with controlled confirmation  
+- Identifies recurring structural market patterns  
+- Establishes a scalable, orchestration-ready quantitative research framework  
+- Provides foundation for future ML, portfolio modeling, or production deployment  
