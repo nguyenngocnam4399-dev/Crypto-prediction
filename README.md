@@ -89,6 +89,35 @@ This layer supports experimental research and structural edge validation.
 Data Warehouse Schema
 ![Warehouse ERD](images/warehouse_schema.png)
 The warehouse follows a fact-driven design where market data, indicators, metrics, predictions, and confirmation results are stored as separate fact tables with clearly defined grain. Dimension tables provide normalization for symbols, intervals, indicators, and metrics.
+🔹 Core Dimensions
+
+dim_symbol – tradable assets
+
+dim_interval – timeframe definition
+
+dim_indicator_type – atomic indicator registry
+
+dim_metric – configurable trading logic
+
+🔹 Fact Layers
+Table	Grain	Purpose
+fact_kline	(symbol, interval, close_time)	Raw market data
+fact_indicator	(symbol, interval, indicator, timestamp)	Atomic indicator values
+fact_metric_value	(symbol, interval, metric, calculating_at)	Evaluated trading conditions
+fact_prediction	(symbol, interval, predicting_at)	Deterministic trading decisions
+fact_prediction_result	(prediction_id)	Realized trade outcomes
+Design Principles
+
+Clear grain definition
+
+No cross-layer coupling
+
+Idempotent ETL
+
+Independent prediction and confirmation
+
+Fully traceable signal lifecycle
+
 ---
 
 ## Key Features
