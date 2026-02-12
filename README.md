@@ -12,7 +12,7 @@ This project was developed to design a structured, scalable, and empirically tes
 
 ---
 
-## Overview
+## 2 Overview
 This project implements an end-to-end quantitative trading research pipeline built on a layered Data Warehouse architecture. It transforms real-time crypto market data into atomic indicators, configurable trading metrics, and deterministic buy/sell signals through a weighted scoring engine. Signals are independently validated via adaptive backtesting and further analyzed using structural pattern mining (FP-Growth) to assess edge sustainability. The system prioritizes transparency, reproducibility, and extensible research design.  
 
 ---
