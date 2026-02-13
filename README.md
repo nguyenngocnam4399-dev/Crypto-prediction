@@ -3,7 +3,7 @@
 
 ### Data Engineering Capstone Project  
 **Author:** Nguyễn Ngọc Nam  
-**Mentor:** Cù Hữu Hoàng  
+**Mentor:**  
 **Location:** Ho Chi Minh City, Vietnam — 2025  
 
 ---
