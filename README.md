@@ -42,8 +42,6 @@ Bài toán đặt ra không đơn thuần là sinh tín hiệu BUY/SELL, mà là
 - Kiểm chứng hiệu suất  
 - Trình diễn cho end-user  
 
-Để giải quyết bài toán này, hệ thống được chia thành các giai đoạn rõ ràng.
-
 ---
 
 # 3️⃣ Thu Thập Dữ Liệu & Phân Tích EDA
@@ -60,13 +58,11 @@ Các trường chính:
 - Close  
 - Volume  
 
-Việc thu thập OHLCV xuất phát từ phân tích EDA:
+Close phản ánh điểm đồng thuận cuối cùng của thị trường.  
+High và Low cho biết mức độ biến động.  
+Volume phản ánh dòng tiền.
 
-- Close phản ánh điểm đồng thuận cuối cùng của thị trường trong một khoảng thời gian.  
-- High và Low cho biết mức độ biến động và sức ép cung cầu.  
-- Volume phản ánh dòng tiền và xác nhận breakout hoặc đảo chiều.  
-
-Các chỉ báo kỹ thuật như RSI, EMA, MACD đều được tính toán từ cấu trúc OHLCV này. Do đó, đây là nền tảng không thể thiếu.
+Các chỉ báo kỹ thuật như RSI, EMA, MACD đều được xây dựng từ cấu trúc này.
 
 ## 3.2 Dữ Liệu Tin Tức & Sentiment
 
@@ -74,11 +70,11 @@ Tin tức được crawl từ các trang crypto và xử lý sentiment.
 
 Lý do thu thập sentiment:
 
-- Thị trường crypto phản ứng mạnh với tin tức.  
-- Tâm lý nhà đầu tư ảnh hưởng trực tiếp đến biến động ngắn hạn.  
-- Một số biến động không thể giải thích chỉ bằng indicator kỹ thuật.  
+- Crypto phản ứng mạnh với tin tức  
+- Tâm lý ảnh hưởng lớn đến biến động  
+- Indicator kỹ thuật không giải thích hết biến động  
 
-Việc kết hợp kỹ thuật và sentiment giúp giảm phụ thuộc vào một nguồn tín hiệu duy nhất.
+Việc kết hợp kỹ thuật và sentiment giúp tăng độ toàn diện của phân tích.
 
 ---
 
@@ -90,116 +86,166 @@ Market / News → Kafka → Spark → Data Warehouse → Metric Engine → Predi
 
 ## 4.1 Vì Sao Sử Dụng Kafka?
 
-Kafka đóng vai trò lớp đệm giữa ingestion và processing.
-
-Lý do chọn Kafka:
-
-- Thị trường hoạt động 24/7, cần xử lý streaming  
-- Tránh phụ thuộc trực tiếp vào API  
-- Cho phép retry và xử lý lại khi Spark job lỗi  
-- Tăng tính ổn định hệ thống  
-
-Nếu không có lớp trung gian này, hệ thống sẽ dễ mất dữ liệu khi upstream gặp sự cố.
-
----
+- Xử lý streaming 24/7  
+- Tách ingestion khỏi processing  
+- Cho phép replay dữ liệu  
+- Tăng fault tolerance  
 
 ## 4.2 Vì Sao Sử Dụng Spark?
 
-Spark hỗ trợ:
-
 - Xử lý rolling window  
 - Tính toán indicator phân tán  
-- Xử lý sentiment theo batch lớn  
-
-Do dữ liệu thị trường tăng liên tục, việc xử lý đơn luồng sẽ không đủ hiệu quả.
-
----
+- Xử lý sentiment batch lớn  
 
 ## 4.3 Vì Sao Thiết Kế Theo Dim–Fact?
 
-Hệ thống sử dụng mô hình Data Warehouse với dimension và fact tách biệt.
+Dimension chứa thông tin mô tả.  
+Fact chứa sự kiện theo thời gian.
 
-Dimension chứa thông tin mô tả (symbol, interval, indicator).  
-Fact chứa sự kiện (giá, metric, prediction).
+Thiết kế này:
 
-Lý do thiết kế này:
-
-- Giảm redundancy  
 - Chuẩn hóa dữ liệu  
-- Hỗ trợ truy vết vòng đời tín hiệu  
-- Dễ audit và kiểm định  
-
-Nếu lưu toàn bộ trong một bảng lớn, hệ thống sẽ khó kiểm soát và khó mở rộng.
+- Hỗ trợ truy vết  
+- Tránh redundancy  
+- Dễ audit  
+- Phù hợp chuẩn Data Warehouse  
 
 ---
 
 # 5️⃣ Orchestration & Reliability
 
-Apache Airflow được sử dụng để:
+Apache Airflow:
 
-- Lập lịch chạy định kỳ  
-- Quản lý dependency  
-- Retry khi lỗi  
-- Ghi log  
+- Lập lịch  
+- Retry  
+- Dependency control  
+- Monitoring  
 
-Hệ thống được thiết kế idempotent để tránh duplicate dữ liệu.  
-Nếu một job thất bại, hệ thống có thể chạy lại mà không làm sai lệch kết quả.
-
-Monitoring giúp đảm bảo pipeline không bị gián đoạn.
+Pipeline được thiết kế idempotent để tránh duplicate.
 
 ---
 
 # 6️⃣ Indicator, Metric & Prediction Engine
 
-Indicator kỹ thuật được tính toán và chuyển thành metric logic (ví dụ: RSI < 30).
+Indicator → Metric logic → Weighted scoring → Prediction
 
-Prediction Engine tính toán:
-
-buy_score và sell_score dựa trên metric có trọng số.
-
-Tín hiệu được phân loại dựa trên edge (chênh lệch điểm).
-
-Hệ thống được thiết kế deterministic để:
+Hệ thống deterministic để:
 
 - Có thể giải thích  
 - Có thể audit  
-- Tránh black-box  
+- Không black-box  
 
 ---
 
 # 7️⃣ Vì Sao Sử Dụng FP-Growth?
 
-Thay vì sử dụng mô hình ML black-box ngay từ đầu, hệ thống sử dụng FP-Growth để:
+FP-Growth được dùng để:
 
-- Tìm pattern thường xuất hiện trong trade thắng  
-- Tính lift và confidence  
-- Kiểm chứng cấu trúc chiến lược  
+- Phát hiện pattern trong trade thắng  
+- Kiểm tra lift & confidence  
+- Xác nhận cấu trúc chiến lược  
 
-FP-Growth không dùng để dự đoán trực tiếp, mà để xác nhận tính bền vững của tổ hợp điều kiện.
-
-Điều này giúp tăng độ tin cậy trước khi mở rộng sang ML phức tạp hơn.
+Không dùng trực tiếp để dự đoán, mà để kiểm chứng tính bền vững.
 
 ---
 
-# 8️⃣ Trình Diễn Cho End-User
+# 8️⃣ Analytics & Dashboard
 
-Web interface hiển thị:
+Hệ thống không chỉ sinh tín hiệu giao dịch mà còn cung cấp bộ dashboard phân tích nhằm giúp người dùng đánh giá độ bền vững và rủi ro của chiến lược.
 
-- Tín hiệu BUY / SELL  
-- Edge & Confidence  
-- Equity Curve  
-- Win Rate & Drawdown  
+---
 
-Thiết kế UI tập trung vào khả năng giúp người dùng đánh giá nhanh tín hiệu mà không cần hiểu kiến trúc phía sau.
+## 📈 1. Price Regression Analysis
+
+![Price Regression](images/price_regression.png)
+
+Biểu đồ hồi quy tuyến tính dùng để đo độ dốc xu hướng ngắn hạn.
+
+- Slope dương → xu hướng tăng  
+- Slope âm → xu hướng giảm  
+- R² thấp → xu hướng yếu, nhiễu cao  
+
+Regression đóng vai trò context filter cho prediction engine.
+
+---
+
+## 📊 2. Model Stability – Rolling Win-rate
+
+![Rolling Winrate](images/rolling_winrate.png)
+
+Đo win-rate theo cửa sổ trượt.
+
+Mục đích:
+
+- Phát hiện regime shift  
+- Kiểm tra độ ổn định theo thời gian  
+- Tránh overfitting  
+
+---
+
+## 🧩 3. Rule Strength – FP-Growth
+
+![Rule Strength](images/rule_strength.png)
+
+Hiển thị các tổ hợp metric thường xuất hiện trong trade thắng.
+
+- Xác định feature co-occurrence  
+- Kiểm tra support & lift  
+- Phát hiện cấu trúc tạo edge  
+
+---
+
+## 🧭 4. Market Regime Impact
+
+![Market Regime](images/market_regime.png)
+
+Radar chart thể hiện trạng thái thị trường:
+
+- Trend  
+- Volatility  
+- Momentum  
+- Edge Strength  
+
+Giúp hiểu bối cảnh thị trường hiện tại.
+
+---
+
+## 📉 5. Rolling Expectancy Curve
+
+![Rolling Expectancy](images/rolling_expectancy.png)
+
+Expectancy = (Win% × Avg Win) − (Loss% × Avg Loss)
+
+- Expectancy > 0 → chiến lược có edge  
+- Expectancy < 0 → không có lợi thế  
+
+---
+
+## 💰 6. Equity Curve & Drawdown
+
+![Equity Curve](images/equity_curve.png)
+
+Equity Curve mô phỏng tăng trưởng vốn.  
+Drawdown phản ánh rủi ro thực tế.
+
+Đây là chỉ số quan trọng nhất với end-user.
+
+---
+
+## 🎯 Vì Sao Dashboard Phù Hợp Cho End-User?
+
+Dashboard được thiết kế để trả lời các câu hỏi thực tế mà nhà đầu tư quan tâm: chiến lược có tạo ra lợi nhuận bền vững không, mức drawdown có chấp nhận được không, edge có duy trì theo thời gian không và thị trường hiện tại có phù hợp để giao dịch hay không.
+
+Thay vì chỉ hiển thị chỉ báo kỹ thuật hoặc độ chính xác mô hình, hệ thống tập trung vào equity, drawdown, expectancy và stability — những yếu tố quyết định khả năng áp dụng ngoài đời thực. Vì vậy dashboard không chỉ phục vụ research mà còn có thể dùng để hỗ trợ quyết định đầu tư thực tế.
 
 ---
 
 # 🔟 Kết Luận & Giá Trị Đạt Được
 
-Dự án này không chỉ đơn thuần là xây dựng một pipeline dữ liệu crypto, mà là quá trình thiết kế một hệ thống định lượng dựa trên nhu cầu thực tế của thị trường tài sản số.
+Dự án này không chỉ xây dựng một pipeline crypto, mà là quá trình thiết kế một hệ thống định lượng dựa trên nhu cầu thực tế của thị trường tài sản số.
 
-Quá trình thực hiện giúp nâng cao hiểu biết về domain tài chính, từ cấu trúc OHLCV đến quản trị rủi ro. Đồng thời, năng lực Data Engineering được phát triển thông qua việc xây dựng pipeline streaming với Kafka, xử lý phân tán bằng Spark, tổ chức Dim–Fact theo chuẩn Data Warehouse và vận hành bằng Airflow.
+Quá trình thực hiện giúp nâng cao hiểu biết về domain tài chính, quản trị rủi ro, Data Engineering (Kafka, Spark, Airflow), thiết kế Data Warehouse và tư duy kiến trúc hệ thống.
 
-Quan trọng hơn, dự án hình thành tư duy thiết kế hệ thống theo hướng có kiểm soát, có kiểm chứng và có khả năng tạo giá trị cho end-user. Thay vì viết mã xử lý rời rạc, hệ thống được xây dựng như một nền tảng có khả năng mở rộng, audit và cải tiến liên tục.
+Quan trọng hơn, dự án hình thành tư duy thiết kế có kiểm soát, có kiểm chứng và có khả năng tạo giá trị cho end-user. Thay vì xử lý dữ liệu rời rạc, hệ thống được xây dựng như một nền tảng có thể mở rộng, audit và cải tiến liên tục.
 
-Đây là bước chuyển từ tư duy lập trình sang tư duy kiến trúc hệ thống phục vụ thực tiễn.
+Đây là bước chuyển từ tư duy lập trình sang tư duy kiến trúc phục vụ thực tiễn.
