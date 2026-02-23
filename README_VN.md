@@ -34,6 +34,8 @@ Hệ thống được xây dựng với tư duy:
 - Idempotency (chạy lại không trùng lặp)
 - Fault tolerance (chịu lỗi)
 - Traceability (truy vết dữ liệu)
+  
+- Link demo: https://ngocnam-de-project.hocnghiepvu.com
 
 ---
 
