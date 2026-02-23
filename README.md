@@ -7,271 +7,199 @@
 
 ---
 
-# 1️⃣ Introduction
+# 1️⃣ Bối Cảnh Thực Tiễn & Động Lực Xây Dựng
 
-This project designs a structured, scalable, and empirically testable quantitative trading research framework. It standardizes the full lifecycle of a trading signal—from real-time market ingestion, technical indicator computation, news sentiment modeling, metric abstraction, to deterministic prediction and independent confirmation—while strictly separating processing layers to prevent data leakage.
+Tài sản số (crypto assets) như BTC, ETH và BNB đang dần trở thành một lớp tài sản có ảnh hưởng thực sự trong hệ sinh thái tài chính toàn cầu. Không chỉ nhà đầu tư cá nhân, mà cả tổ chức và chính phủ cũng bắt đầu quan tâm đến việc quản lý và cấp phép loại tài sản này. Khi khung pháp lý dần hình thành, nhu cầu về một hệ thống phân tích dữ liệu đáng tin cậy và có cơ chế kiểm chứng trở nên cấp thiết.
 
-Instead of relying on opaque machine learning models, the system implements a weighted, metric-driven scoring engine based on the concept of **edge**, allowing transparent evaluation of directional dominance between buyers and sellers. The architecture follows a fact-driven Data Warehouse design with explicit grain definition, idempotent ETL processes, and full signal traceability. Structural pattern mining (FP-Growth) is applied to validated trades to assess edge sustainability. The framework prioritizes transparency, reproducibility, and experimental rigor over short-term optimization.
+Trong thực tế, phần lớn nhà đầu tư cá nhân hiện nay vẫn ra quyết định dựa trên cảm tính, tin tức rời rạc hoặc các công cụ phân tích thiếu kiểm định hiệu suất. Họ thiếu một môi trường có thể:
 
----
+- Thu thập dữ liệu liên tục  
+- Phân tích có cấu trúc  
+- Kiểm định tín hiệu trước khi sử dụng  
+- Đánh giá độ ổn định chiến lược theo thời gian  
 
-# 2️⃣ System Outputs & User Value
+Dự án này được xây dựng xuất phát từ nhu cầu đó: cung cấp cho người dùng một hệ thống phân tích định lượng có khả năng xử lý dữ liệu liên tục, tích hợp cả yếu tố kỹ thuật lẫn tâm lý thị trường, đồng thời có cơ chế kiểm chứng rõ ràng.
 
-This platform delivers multiple layers of value:
+Hệ thống tập trung vào BTC, ETH và BNB vì đây là các tài sản có:
 
-## 1. Explainable Trading Signals
-- Deterministic BUY / SELL decisions  
-- Edge and confidence scoring  
-- Transparent metric contribution  
-- No black-box logic  
+- Thanh khoản cao  
+- Lịch sử dữ liệu dài  
+- Độ ổn định tương đối  
+- Ảnh hưởng lớn đến thị trường  
 
-## 2. Controlled Performance Evaluation
-- Leakage-safe confirmation framework  
-- Adaptive TP/SL risk modeling  
-- Expectancy & drawdown analysis  
-- Equity curve simulation  
-
-## 3. Structural Market Insights
-- Regime-based segmentation  
-- FP-Growth structural mining  
-- Lift-based validation  
-- Recurring condition detection  
-
-## 4. Integrated Market + News Intelligence
-- Real-time sentiment ingestion  
-- Weighted symbol-level sentiment modeling  
-- Window-based aggregation  
-- Deterministic integration into scoring  
+Việc chọn nhóm tài sản này giúp đảm bảo tính thực tiễn và tính bền vững của phân tích.
 
 ---
 
-# 3️⃣ System Architecture
+# 2️⃣ Xác Định Bài Toán & Hướng Giải Quyết
 
-![System Architecture](images/System_Architecture.png)
+Bài toán đặt ra không đơn thuần là sinh tín hiệu BUY/SELL, mà là xây dựng một hệ thống hoàn chỉnh có khả năng:
 
-The system follows a layered architecture separating ingestion, transformation, signal modeling, orchestration, validation, and analytics.
+- Thu thập dữ liệu real-time  
+- Chuẩn hóa và lưu trữ có cấu trúc  
+- Phân tích kỹ thuật & sentiment  
+- Sinh tín hiệu có thể giải thích  
+- Kiểm chứng hiệu suất  
+- Trình diễn cho end-user  
 
----
-
-## 1. Data Ingestion
-
-### Market Data
-- Kafka streams real-time OHLCV data  
-- Spark Streaming normalizes records  
-- Stored in `fact_kline`  
-
-### News Data
-- News crawled from crypto media sources  
-- Sent to Kafka topic  
-- Consumed and stored in `news_fact`  
-- Symbol mapping stored in `news_coin_fact`  
-
-Both streams remain independent and immutable.
+Để giải quyết bài toán này, hệ thống được chia thành các giai đoạn rõ ràng.
 
 ---
 
-## 2. Indicator Computation
+# 3️⃣ Thu Thập Dữ Liệu & Phân Tích EDA
 
-- Atomic indicators computed via Spark  
-- Stored in `fact_indicator`  
-- Partitioned by symbol and interval  
-- Fully recomputable from raw kline  
+## 3.1 Dữ Liệu Giá (OHLCV)
 
----
+Dữ liệu được stream real-time từ Binance thông qua API/WebSocket.
 
-## 3. News Sentiment Processing
+Các trường chính:
 
-News sentiment is modeled as a multi-layer fact pipeline:
+- Open  
+- High  
+- Low  
+- Close  
+- Volume  
 
-### Raw Layer — `news_fact`
-Grain: 1 row = 1 article  
-- title  
-- url (UNIQUE)  
-- sentiment_score  
-- created_date  
-- view_number  
-- tag_id  
+Việc thu thập OHLCV xuất phát từ phân tích EDA:
 
-### Mapping Layer — `news_coin_fact`
-Grain: `(news_id, symbol_id)`  
-- symbol attribution  
-- confidence score  
+- Close phản ánh điểm đồng thuận cuối cùng của thị trường trong một khoảng thời gian.  
+- High và Low cho biết mức độ biến động và sức ép cung cầu.  
+- Volume phản ánh dòng tiền và xác nhận breakout hoặc đảo chiều.  
 
-### Weighted Layer — `news_sentiment_weighted_fact`
-Grain: `(news_id, symbol_id)`  
+Các chỉ báo kỹ thuật như RSI, EMA, MACD đều được tính toán từ cấu trúc OHLCV này. Do đó, đây là nền tảng không thể thiếu.
 
-Includes:
-- raw_sentiment  
-- tag_weight  
-- confidence  
-- weighted_score  
-- final_score  
-- event_time  
+## 3.2 Dữ Liệu Tin Tức & Sentiment
 
-Constraints:
-- UNIQUE(news_id, symbol_id)  
-- Indexed for join optimization  
+Tin tức được crawl từ các trang crypto và xử lý sentiment.
 
-### Aggregated Layer — `news_sentiment_agg_fact`
-Grain: `(symbol_id, window_start)`  
+Lý do thu thập sentiment:
 
-- news_count  
-- sentiment_weighted  
+- Thị trường crypto phản ứng mạnh với tin tức.  
+- Tâm lý nhà đầu tư ảnh hưởng trực tiếp đến biến động ngắn hạn.  
+- Một số biến động không thể giải thích chỉ bằng indicator kỹ thuật.  
 
-Aligned to trading interval resolution.
+Việc kết hợp kỹ thuật và sentiment giúp giảm phụ thuộc vào một nguồn tín hiệu duy nhất.
 
 ---
 
-## 4. Metric Abstraction
+# 4️⃣ Thiết Kế Kiến Trúc Hệ Thống
 
-- Trading conditions defined in `dim_metric`  
-- Technical + sentiment metrics supported  
-- Evaluated into `fact_metric_value`  
-- Threshold, trend, cross, volatility logic  
+Luồng tổng thể:
 
----
+Market / News → Kafka → Spark → Data Warehouse → Metric Engine → Prediction → Backtesting → Analytics → Web
 
-## 5. Prediction Engine
+## 4.1 Vì Sao Sử Dụng Kafka?
 
-buy_score  = Σ(weighted BUY metrics)  
-sell_score = Σ(weighted SELL metrics)  
+Kafka đóng vai trò lớp đệm giữa ingestion và processing.
 
-edge = |buy_score − sell_score|  
-confidence = max(score) / MAX_SCORE  
+Lý do chọn Kafka:
 
-Stored in `fact_prediction`.
+- Thị trường hoạt động 24/7, cần xử lý streaming  
+- Tránh phụ thuộc trực tiếp vào API  
+- Cho phép retry và xử lý lại khi Spark job lỗi  
+- Tăng tính ổn định hệ thống  
 
-Deterministic, explainable, leakage-safe.
+Nếu không có lớp trung gian này, hệ thống sẽ dễ mất dữ liệu khi upstream gặp sự cố.
 
 ---
 
-## 6. Backtesting & Confirmation
+## 4.2 Vì Sao Sử Dụng Spark?
 
-- Adaptive TP/SL  
-- Controlled lookahead  
-- Results stored in `fact_prediction_result`  
-- Strict separation from prediction  
+Spark hỗ trợ:
 
----
+- Xử lý rolling window  
+- Tính toán indicator phân tán  
+- Xử lý sentiment theo batch lớn  
 
-## 7. Orchestration Layer (Apache Airflow)
-
-- DAG-based workflow control  
-- Spark job scheduling  
-- Metric & sentiment pipelines  
-- Retry & failure handling  
-- CeleryExecutor for distributed tasks  
-
-Runs on Linux-based infrastructure.
+Do dữ liệu thị trường tăng liên tục, việc xử lý đơn luồng sẽ không đủ hiệu quả.
 
 ---
 
-## 8. Analytics & Pattern Mining
+## 4.3 Vì Sao Thiết Kế Theo Dim–Fact?
 
-- Win Rate  
-- Expectancy  
-- Rolling stability  
-- Equity curve  
-- Drawdown  
-- FP-Growth structural validation  
+Hệ thống sử dụng mô hình Data Warehouse với dimension và fact tách biệt.
 
----
+Dimension chứa thông tin mô tả (symbol, interval, indicator).  
+Fact chứa sự kiện (giá, metric, prediction).
 
-# 4️⃣ Data Warehouse Design
+Lý do thiết kế này:
 
-![Warehouse ERD](images/warehouse_schema.png)
+- Giảm redundancy  
+- Chuẩn hóa dữ liệu  
+- Hỗ trợ truy vết vòng đời tín hiệu  
+- Dễ audit và kiểm định  
 
-Fact-driven layered warehouse with explicit grain definition.
-
-## Core Dimensions
-- `dim_symbol`
-- `dim_interval`
-- `dim_indicator_type`
-- `dim_metric`
-
-## Market Fact Tables
-
-| Table | Grain | Role |
-|-------|-------|------|
-| `fact_kline` | (symbol, interval, close_time) | Market data |
-| `fact_indicator` | (symbol, interval, indicator, timestamp) | Atomic signals |
-| `fact_metric_value` | (symbol, interval, metric, calculating_at) | Conditions |
-| `fact_prediction` | (symbol, interval, predicting_at) | Hypothesis |
-| `fact_prediction_result` | (prediction_id) | Realized outcome |
-
-## News Fact Tables
-
-| Table | Grain | Role |
-|-------|-------|------|
-| `news_fact` | (id) | Raw articles |
-| `news_coin_fact` | (news_id, symbol_id) | Symbol mapping |
-| `news_sentiment_weighted_fact` | (news_id, symbol_id) | Weighted sentiment |
-| `news_sentiment_agg_fact` | (symbol_id, window_start) | Aggregated sentiment |
-
-Design Principles:
-- Explicit grain  
-- Idempotent ETL  
-- Event-time alignment  
-- No cross-layer coupling  
-- Fully traceable lifecycle  
+Nếu lưu toàn bộ trong một bảng lớn, hệ thống sẽ khó kiểm soát và khó mở rộng.
 
 ---
 
-# 🔟 Tech Stack & Engineering Practices
+# 5️⃣ Orchestration & Reliability
 
-## Tech Stack
+Apache Airflow được sử dụng để:
 
-- Python  
-- PySpark  
-- Apache Kafka  
-- Apache Airflow (CeleryExecutor)  
-- Spark ML (FPGrowth)  
-- MySQL 8  
-- Flask  
-- NumPy / Pandas  
+- Lập lịch chạy định kỳ  
+- Quản lý dependency  
+- Retry khi lỗi  
+- Ghi log  
 
-## Deployment Environment
+Hệ thống được thiết kế idempotent để tránh duplicate dữ liệu.  
+Nếu một job thất bại, hệ thống có thể chạy lại mà không làm sai lệch kết quả.
 
-Linux-based infrastructure:
-
-- Kafka service  
-- Spark cluster  
-- Airflow scheduler + workers  
-- MySQL server  
-- Flask API  
-
-No containerization.
+Monitoring giúp đảm bảo pipeline không bị gián đoạn.
 
 ---
 
-## Engineering Practices
+# 6️⃣ Indicator, Metric & Prediction Engine
 
-- Layered architecture  
-- Explicit grain control  
-- Fact-driven warehouse modeling  
-- Idempotent ETL  
-- UTC normalization  
-- Event-time alignment  
-- Config-driven strategy logic  
-- Strict prediction/confirmation separation  
-- DAG-based orchestration  
+Indicator kỹ thuật được tính toán và chuyển thành metric logic (ví dụ: RSI < 30).
 
----
+Prediction Engine tính toán:
 
-# 11️⃣ Conclusion
+buy_score và sell_score dựa trên metric có trọng số.
 
-This project establishes a deterministic quantitative research infrastructure grounded in structured data modeling and strict leakage control.
+Tín hiệu được phân loại dựa trên edge (chênh lệch điểm).
 
-By decoupling ingestion (market & news), signal construction, confirmation, and evaluation into independent layers, the system enforces reproducibility, auditability, and disciplined experimentation. Every stage of the signal lifecycle—technical and sentiment—is persisted at explicit grain within a fact-driven warehouse.
+Hệ thống được thiết kế deterministic để:
 
-The architecture is designed as a scalable research foundation capable of extending toward:
-
-- Portfolio-level allocation models  
-- Transaction cost integration  
-- Regime-adaptive weighting  
-- Hybrid deterministic–statistical extensions  
-
-The objective is not short-term optimization, but the construction of a controlled environment where edge can be measured, validated, and stress-tested under reproducible conditions.
+- Có thể giải thích  
+- Có thể audit  
+- Tránh black-box  
 
 ---
 
+# 7️⃣ Vì Sao Sử Dụng FP-Growth?
+
+Thay vì sử dụng mô hình ML black-box ngay từ đầu, hệ thống sử dụng FP-Growth để:
+
+- Tìm pattern thường xuất hiện trong trade thắng  
+- Tính lift và confidence  
+- Kiểm chứng cấu trúc chiến lược  
+
+FP-Growth không dùng để dự đoán trực tiếp, mà để xác nhận tính bền vững của tổ hợp điều kiện.
+
+Điều này giúp tăng độ tin cậy trước khi mở rộng sang ML phức tạp hơn.
+
+---
+
+# 8️⃣ Trình Diễn Cho End-User
+
+Web interface hiển thị:
+
+- Tín hiệu BUY / SELL  
+- Edge & Confidence  
+- Equity Curve  
+- Win Rate & Drawdown  
+
+Thiết kế UI tập trung vào khả năng giúp người dùng đánh giá nhanh tín hiệu mà không cần hiểu kiến trúc phía sau.
+
+---
+
+# 🔟 Kết Luận & Giá Trị Đạt Được
+
+Dự án này không chỉ đơn thuần là xây dựng một pipeline dữ liệu crypto, mà là quá trình thiết kế một hệ thống định lượng dựa trên nhu cầu thực tế của thị trường tài sản số.
+
+Quá trình thực hiện giúp nâng cao hiểu biết về domain tài chính, từ cấu trúc OHLCV đến quản trị rủi ro. Đồng thời, năng lực Data Engineering được phát triển thông qua việc xây dựng pipeline streaming với Kafka, xử lý phân tán bằng Spark, tổ chức Dim–Fact theo chuẩn Data Warehouse và vận hành bằng Airflow.
+
+Quan trọng hơn, dự án hình thành tư duy thiết kế hệ thống theo hướng có kiểm soát, có kiểm chứng và có khả năng tạo giá trị cho end-user. Thay vì viết mã xử lý rời rạc, hệ thống được xây dựng như một nền tảng có khả năng mở rộng, audit và cải tiến liên tục.
+
+Đây là bước chuyển từ tư duy lập trình sang tư duy kiến trúc hệ thống phục vụ thực tiễn.
