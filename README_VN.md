@@ -7,23 +7,11 @@
 
 # 🌍 Bối Cảnh Thị Trường & Nhu Cầu Thực Tế
 
-Trong những năm gần đây, tài sản số như BTC, ETH và BNB đang dần trở thành một lớp tài sản được quan tâm rộng rãi tại Việt Nam và toàn cầu.
+Trong những năm gần đây, tài sản số như BTC, ETH và BNB đang dần trở thành một lớp tài sản có thanh khoản cao và thu hút sự tham gia mạnh mẽ của nhà đầu tư cá nhân lẫn tổ chức. Tuy nhiên, đặc thù của thị trường crypto là biến động lớn, phản ứng nhạy với tin tức và thường xuyên xuất hiện nhiễu tín hiệu ngắn hạn. Phần lớn quyết định giao dịch vẫn dựa trên cảm tính hoặc quan sát rời rạc, thiếu một hệ thống định lượng có khả năng kiểm chứng và đánh giá hiệu suất dài hạn.
 
-- Số lượng nhà đầu tư tăng mạnh
-- Biến động giá cao
-- Quyết định giao dịch thường dựa trên cảm tính
-- Thiếu hệ thống định lượng minh bạch
+Trong bối cảnh tài sản số ngày càng được quan tâm và có xu hướng được quản lý chính thức, nhu cầu về một nền tảng phân tích dữ liệu thời gian thực, minh bạch và có cơ sở thống kê trở nên cấp thiết. Một hệ thống như vậy không chỉ cần thu thập và xử lý dữ liệu liên tục, mà còn phải tổ chức dữ liệu theo chuẩn Data Warehouse, xây dựng mô hình scoring rõ ràng, và đánh giá chiến lược bằng các chỉ số hiệu suất có thể truy vết.
 
-Trong bối cảnh tài sản số đang dần được quản lý và thể chế hóa, nhu cầu về một hệ thống:
-
-- Phân tích dữ liệu real-time
-- Đưa ra tín hiệu có cơ sở thống kê
-- Đánh giá hiệu suất minh bạch
-- Hỗ trợ quyết định khách quan
-
-trở nên cấp thiết.
-
-Dự án này được xây dựng nhằm giải quyết nhu cầu đó bằng cách kết hợp Data Engineering, Data Warehouse và mô hình thống kê.
+Dự án này được xây dựng nhằm giải quyết bài toán đó. Thay vì tập trung vào dự đoán ngắn hạn đơn lẻ, hệ thống hướng tới việc thiết kế một hạ tầng dữ liệu hoàn chỉnh — từ ingestion, xử lý phân tán, lưu trữ chuẩn hóa, modeling, đến phân tích hiệu suất — nhằm cung cấp góc nhìn định lượng có thể kiểm chứng và mở rộng.
 
 ---
 
@@ -407,17 +395,8 @@ Hệ thống được thiết kế để:
 
 # 🏁 Kết Luận
 
-Đây không chỉ là một hệ thống dự đoán crypto.
+Dự án này không chỉ là một hệ thống tạo tín hiệu giao dịch crypto, mà là một nền tảng xử lý dữ liệu hoàn chỉnh được thiết kế theo tư duy production-grade. Toàn bộ vòng đời dữ liệu được triển khai xuyên suốt: từ ingestion thời gian thực qua Kafka, xử lý phân tán bằng Spark, tổ chức dữ liệu theo mô hình Dim-Fact trong Data Warehouse, đến xây dựng hệ thống scoring, backtest và khai phá pattern bằng FP-Growth.
 
-Đây là một nền tảng xử lý dữ liệu hoàn chỉnh:
+Thông qua việc thiết kế và triển khai hệ thống này, tôi không chỉ củng cố kiến thức về cấu trúc thị trường tài chính (OHLC, momentum, volatility, risk management) mà còn nâng cao tư duy Data Engineering ở mức hệ thống: thiết kế pipeline có thể chạy lại không trùng lặp (idempotent), kiểm soát duplicate, đảm bảo khả năng mở rộng theo tài sản và theo khối lượng dữ liệu, cũng như duy trì tính truy vết và minh bạch trong phân tích.
 
-- Ingestion thời gian thực
-- Xử lý phân tán
-- Data Warehouse chuẩn DW
-- Modeling định lượng có kiểm chứng
-- Pattern mining hỗ trợ tối ưu chiến lược
-- Dashboard phục vụ end-user
-
-Dự án thể hiện toàn bộ vòng đời dữ liệu:
-
-Từ dữ liệu thô → xử lý → lưu trữ → modeling → phân tích → insight hành động.
+Quan trọng hơn, dự án thể hiện cách kết nối giữa business problem và technical solution — chuyển đổi dữ liệu thô thành insight định lượng có khả năng kiểm chứng. Đây là nền tảng để phát triển các hệ thống phân tích dữ liệu ở quy mô lớn hơn, nơi độ ổn định, khả năng mở rộng và tính chính xác thống kê đóng vai trò cốt lõi.
