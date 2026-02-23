@@ -29,6 +29,8 @@ Hệ thống tập trung vào BTC, ETH và BNB vì đây là các tài sản có
 
 Việc chọn nhóm tài sản này giúp đảm bảo tính thực tiễn và tính bền vững của phân tích.
 
+Link demo: https://ngocnam-de-project.hocnghiepvu.com
+
 ---
 
 # 2️⃣ Xác Định Bài Toán & Hướng Giải Quyết
