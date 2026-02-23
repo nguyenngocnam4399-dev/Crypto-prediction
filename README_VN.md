@@ -226,11 +226,9 @@ Sentiment được sử dụng để bổ sung yếu tố tâm lý vào hệ th�
 
 ## 🧮 Market Scoring
 
-Market Score =  
-Trend + Momentum + Volume + Volatility
+Market Score =  Trend + Momentum + Volume + Volatility
 
-Confidence Score =  
-Market Score / Max Score
+Confidence Score =  Market Score / Max Score
 
 ### Cơ Chế Bảo Vệ (Guard)
 
