@@ -5,6 +5,28 @@
 
 ---
 
+# 🌍 Bối Cảnh Thị Trường & Nhu Cầu Thực Tế
+
+Trong những năm gần đây, tài sản số như BTC, ETH và BNB đang dần trở thành một lớp tài sản được quan tâm rộng rãi tại Việt Nam và toàn cầu.
+
+- Số lượng nhà đầu tư tăng mạnh
+- Biến động giá cao
+- Quyết định giao dịch thường dựa trên cảm tính
+- Thiếu hệ thống định lượng minh bạch
+
+Trong bối cảnh tài sản số đang dần được quản lý và thể chế hóa, nhu cầu về một hệ thống:
+
+- Phân tích dữ liệu real-time
+- Đưa ra tín hiệu có cơ sở thống kê
+- Đánh giá hiệu suất minh bạch
+- Hỗ trợ quyết định khách quan
+
+trở nên cấp thiết.
+
+Dự án này được xây dựng nhằm giải quyết nhu cầu đó bằng cách kết hợp Data Engineering, Data Warehouse và mô hình thống kê.
+
+---
+
 ## 📌 Tóm Tắt Điều Hành (Executive Summary)
 
 Đây là một nền tảng xử lý dữ liệu và nghiên cứu định lượng được thiết kế theo định hướng production, với mục tiêu:
@@ -25,27 +47,7 @@ Hệ thống được xây dựng với tư duy:
 
 ---
 
-# 1️⃣ Bối Cảnh & Động Lực Xây Dựng
-
-Tài sản số đang dần trở thành một lớp tài sản được quản lý và thể chế hóa.
-
-Thách thức chính:
-
-- Biến động mạnh
-- Nhiễu tín hiệu cao
-- Nhà đầu tư nhỏ lẻ thiếu công cụ định lượng
-- Quyết định giao dịch dựa trên cảm tính
-
-Dự án này được xây dựng nhằm:
-
-- Chuyển đổi dữ liệu thô thành insight định lượng
-- Tạo hệ thống scoring minh bạch
-- Kiểm chứng chiến lược bằng thống kê
-- Hỗ trợ quyết định dựa trên dữ liệu
-
----
-
-# 2️⃣ Kiến Trúc Tổng Thể Hệ Thống
+# 1️⃣ Kiến Trúc Tổng Thể Hệ Thống
 
 ## 🏗 System Architecture
 
@@ -79,13 +81,14 @@ Hệ thống gồm 5 tầng:
 
 ---
 
-# 3️⃣ Thiết Kế Data Engineering
+# 2️⃣ Thiết Kế Data Engineering
 
 ## 🔄 Ingestion Real-Time
 
 - Kafka giúp tách biệt producer & consumer
 - Hỗ trợ replay dữ liệu
 - Có thể scale ngang khi volume tăng
+- Giảm phụ thuộc trực tiếp vào nguồn API
 
 ## ⚡ Xử Lý Phân Tán (Spark)
 
@@ -100,13 +103,13 @@ Spark được dùng để:
 Thiết kế đảm bảo:
 
 - Partition theo symbol
-- Anti-duplicate write
+- Anti-duplicate write (left-anti join)
 - Idempotent JDBC insert
-- Tách biệt xử lý theo coin
+- Tách biệt xử lý theo từng tài sản
 
 ---
 
-# 4️⃣ Kiến Trúc Data Warehouse
+# 3️⃣ Kiến Trúc Data Warehouse
 
 ## 🗄 Mô Hình Dim-Fact
 
@@ -140,10 +143,11 @@ Thiết kế đảm bảo:
 - Lưu trữ lịch sử rõ ràng
 - Dễ mở rộng metric mới
 - Phù hợp chuẩn Data Warehouse
+- Hỗ trợ phân tích theo thời gian và theo tài sản
 
 ---
 
-# 5️⃣ Framework Modeling & Scoring
+# 4️⃣ Framework Modeling & Scoring
 
 ## 🧮 Market Scoring
 
@@ -165,10 +169,11 @@ Mục tiêu:
 - Tránh overtrading
 - Hạn chế false signal
 - Giảm nhiễu trong regime squeeze
+- Duy trì tính ổn định chiến lược
 
 ---
 
-# 6️⃣ Backtest & Quản Trị Rủi Ro
+# 5️⃣ Backtest & Quản Trị Rủi Ro
 
 Backtest đánh giá:
 
@@ -184,10 +189,11 @@ Backtest đánh giá:
 - Kiểm tra tính sống sót (survivability)
 - Phát hiện suy giảm edge
 - Tránh overfitting
+- Đánh giá hiệu suất dài hạn
 
 ---
 
-# 7️⃣ Phân Tích Hiệu Suất
+# 6️⃣ Phân Tích Hiệu Suất
 
 ## 📈 Equity Curve & Drawdown
 
@@ -195,7 +201,7 @@ Backtest đánh giá:
 
 - Tăng trưởng vốn
 - Maximum drawdown
-- Đánh giá rủi ro
+- Đánh giá rủi ro hệ thống
 
 ---
 
@@ -248,23 +254,25 @@ Sử dụng FP-Growth để:
 - Tìm pattern giao dịch thắng lặp lại
 - Đo strength bằng Support, Confidence, Lift
 - Hỗ trợ tối ưu chiến lược
+- Cải thiện hệ thống scoring
 
 ---
 
-# 8️⃣ Yếu Tố Production
+# 7️⃣ Yếu Tố Production
 
 Hệ thống được thiết kế để:
 
 - Có thể chạy lại không trùng dữ liệu
-- Retry khi job lỗi
+- Retry khi job lỗi qua Airflow
 - Phân tách xử lý theo coin
 - Hỗ trợ mở rộng thêm tài sản
 - Kiểm soát duplicate bằng left-anti join
-- Quản lý lịch chạy bằng Airflow
+- Cấu hình metric bật/tắt linh hoạt
+- Theo dõi và truy vết toàn bộ pipeline
 
 ---
 
-# 9️⃣ Tech Stack
+# 8️⃣ Tech Stack
 
 | Layer | Công nghệ |
 |--------|------------|
@@ -278,7 +286,7 @@ Hệ thống được thiết kế để:
 
 ---
 
-# 🔟 Giá Trị Đạt Được
+# 9️⃣ Giá Trị Đạt Được
 
 ## 📊 Kiến Thức Tài Chính
 
@@ -310,6 +318,7 @@ Hệ thống được thiết kế để:
 - Phục hồi khi lỗi
 - Kiến trúc phân tầng rõ ràng
 - Tư duy production-grade
+- Kết nối giữa business problem và technical solution
 
 ---
 
