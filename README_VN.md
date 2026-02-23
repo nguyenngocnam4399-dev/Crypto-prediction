@@ -9,17 +9,17 @@
 
 Trong những năm gần đây, tài sản số như BTC, ETH và BNB đang dần trở thành một lớp tài sản được quan tâm rộng rãi tại Việt Nam và toàn cầu.
 
-- Số lượng nhà đầu tư tăng mạnh
-- Biến động giá cao
-- Quyết định giao dịch thường dựa trên cảm tính
-- Thiếu hệ thống định lượng minh bạch
+- Số lượng nhà đầu tư tăng mạnh  
+- Biến động giá cao  
+- Quyết định giao dịch thường dựa trên cảm tính  
+- Thiếu hệ thống định lượng minh bạch  
 
 Trong bối cảnh tài sản số đang dần được quản lý và thể chế hóa, nhu cầu về một hệ thống:
 
-- Phân tích dữ liệu real-time
-- Đưa ra tín hiệu có cơ sở thống kê
-- Đánh giá hiệu suất minh bạch
-- Hỗ trợ quyết định khách quan
+- Phân tích dữ liệu real-time  
+- Đưa ra tín hiệu có cơ sở thống kê  
+- Đánh giá hiệu suất minh bạch  
+- Hỗ trợ quyết định khách quan  
 
 trở nên cấp thiết.
 
@@ -31,19 +31,19 @@ Dự án này được xây dựng nhằm giải quyết nhu cầu đó bằng c
 
 Đây là một nền tảng xử lý dữ liệu và nghiên cứu định lượng được thiết kế theo định hướng production, với mục tiêu:
 
-- Thu thập dữ liệu thị trường crypto theo thời gian thực
-- Chuẩn hóa và tổ chức dữ liệu theo mô hình Data Warehouse (Dim-Fact)
-- Xây dựng hệ thống chấm điểm (scoring) tín hiệu giao dịch có tính xác định (deterministic)
-- Backtest và đánh giá độ ổn định chiến lược
-- Khai phá pattern giao dịch thắng bằng FP-Growth
-- Trình diễn phân tích qua Dashboard
+- Thu thập dữ liệu thị trường crypto theo thời gian thực  
+- Chuẩn hóa và tổ chức dữ liệu theo mô hình Data Warehouse (Dim-Fact)  
+- Xây dựng hệ thống chấm điểm (scoring) tín hiệu giao dịch có tính xác định  
+- Backtest và đánh giá độ ổn định chiến lược  
+- Khai phá pattern giao dịch thắng bằng FP-Growth  
+- Trình diễn phân tích qua Dashboard  
 
 Hệ thống được xây dựng với tư duy:
 
-- Scalability (khả năng mở rộng)
-- Idempotency (chạy lại không trùng lặp)
-- Fault tolerance (chịu lỗi)
-- Traceability (truy vết dữ liệu)
+- Scalability  
+- Idempotency  
+- Fault tolerance  
+- Traceability  
 
 ---
 
@@ -56,28 +56,28 @@ Hệ thống được xây dựng với tư duy:
 Hệ thống gồm 5 tầng:
 
 ### 🔹 Tầng Thu Thập Dữ Liệu
-- Binance WebSocket / API
-- News Crawler
-- Kafka Streaming
+- Binance WebSocket / API  
+- News Crawler  
+- Kafka Streaming  
 
 ### 🔹 Tầng Xử Lý
-- Spark (Batch & Streaming)
-- Indicator Engine
-- Metric & Scoring Engine
-- Backtest Engine
-- FP-Growth Mining
+- Spark (Batch & Streaming)  
+- Indicator Engine  
+- Metric & Scoring Engine  
+- Backtest Engine  
+- FP-Growth Mining  
 
 ### 🔹 Tầng Lưu Trữ
-- MySQL Data Warehouse (Dim-Fact)
+- MySQL Data Warehouse (Dim-Fact)  
 
 ### 🔹 Tầng Điều Phối
-- Airflow DAG
-- Retry & Failure Handling
-- Idempotent Job Execution
+- Airflow DAG  
+- Retry & Failure Handling  
+- Idempotent Job Execution  
 
 ### 🔹 Tầng Trình Diễn
-- Flask API
-- Dashboard phân tích
+- Flask API  
+- Dashboard phân tích  
 
 ---
 
@@ -85,194 +85,218 @@ Hệ thống gồm 5 tầng:
 
 ## 🔄 Ingestion Real-Time
 
-- Kafka giúp tách biệt producer & consumer
-- Hỗ trợ replay dữ liệu
-- Có thể scale ngang khi volume tăng
-- Giảm phụ thuộc trực tiếp vào nguồn API
+- Kafka giúp tách biệt producer & consumer  
+- Hỗ trợ replay dữ liệu  
+- Scale ngang khi volume tăng  
+- Giảm phụ thuộc trực tiếp vào API  
 
 ## ⚡ Xử Lý Phân Tán (Spark)
 
 Spark được dùng để:
 
-- Tính indicator (RSI, MACD, EMA, BB, ADX, VWAP, ATR, OBV)
-- Tính metric giao dịch
-- Xây dựng market score
-- Xác nhận backtest
-- Chuẩn bị dữ liệu mining
+- Tính indicator (RSI, MACD, EMA, BB, ADX, VWAP, ATR, OBV)  
+- Tính metric giao dịch  
+- Xây dựng market score  
+- Xác nhận backtest  
+- Chuẩn bị dữ liệu mining  
 
 Thiết kế đảm bảo:
 
-- Partition theo symbol
-- Anti-duplicate write (left-anti join)
-- Idempotent JDBC insert
-- Tách biệt xử lý theo từng tài sản
+- Partition theo symbol  
+- Anti-duplicate write (left-anti join)  
+- Idempotent JDBC insert  
+- Tách biệt xử lý theo từng tài sản  
 
 ---
 
-# 3️⃣ Kiến Trúc Data Warehouse
+# 3️⃣ Data Understanding (EDA) & Data Dictionary Reasoning
 
-## 🗄 Mô Hình Dim-Fact
+Việc thu thập dữ liệu không chỉ mang tính kỹ thuật mà dựa trên hành vi hình thành giá trong thị trường crypto.
+
+## 📊 Market Data (OHLCV)
+
+| Trường | Vai trò |
+|--------|--------|
+| Open/Close | Xác định cấu trúc nến |
+| High/Low | Đo biên độ dao động |
+| Volume | Xác nhận dòng tiền |
+| Timestamp | Phân tích theo chu kỳ |
+
+OHLCV là nền tảng của mọi indicator. Nếu không chuẩn hóa theo timeframe, phân tích sẽ mất ý nghĩa.
+
+---
+
+## 📈 Momentum Indicators (RSI, MACD)
+
+- RSI đo trạng thái quá mua/quá bán  
+- MACD phát hiện chuyển pha động lượng  
+- Histogram MACD nhận diện momentum weakening  
+
+Crypto thường xuất hiện pha overbought/oversold mạnh → RSI rất hữu ích.
+
+---
+
+## 📉 Trend Indicators (EMA, ADX)
+
+- EMA200 xác định xu hướng dài hạn  
+- EMA20/50 cho trung & ngắn hạn  
+- ADX đo sức mạnh xu hướng  
+
+Mục tiêu: tránh giao dịch ngược xu hướng chính.
+
+---
+
+## 📊 Volatility Indicators (BB, ATR)
+
+Crypto có đặc điểm:
+
+- Giai đoạn squeeze  
+- Giai đoạn expansion  
+
+BB đo độ mở biên  
+ATR hỗ trợ thiết lập Stop Loss
+
+---
+
+## 📊 Volume Metrics
+
+Volume xác nhận tín hiệu:
+
+- Breakout không có volume → dễ false  
+- Divergence volume → cảnh báo suy yếu  
+
+---
+
+## 📰 News & Sentiment
+
+Crypto phản ứng mạnh với:
+
+- Regulation  
+- ETF  
+- Exchange hack  
+- Macro event  
+
+Sentiment giúp bổ sung góc nhìn tâm lý thị trường.
+
+---
+
+## 🎯 Mục Tiêu EDA
+
+- Xác định indicator đóng góp Win Rate  
+- Loại bỏ metric không có ý nghĩa  
+- Tối ưu trọng số scoring  
+- Giảm overfitting  
+
+---
+
+# 4️⃣ Kiến Trúc Data Warehouse
+
+## 🗄 Dim-Fact Modeling
 
 ![Warehouse Schema](images/warehouse_schema_crypto.png)
 
 ![News Warehouse Schema](images/warehouse_schema_news.png)
 
 ### Dimension Tables
-- dim_symbol
-- dim_interval
-- dim_indicator_type
-- dim_metric
-- tag_dim
+- dim_symbol  
+- dim_interval  
+- dim_indicator_type  
+- dim_metric  
+- tag_dim  
 
 ### Fact Tables
-- fact_kline
-- fact_indicator
-- fact_metric_value
-- fact_prediction
-- fact_prediction_result
-- news_sentiment_weighted_fact
-- fp_growth_win_patterns
-- fp_growth_win_rules
+- fact_kline  
+- fact_indicator  
+- fact_metric_value  
+- fact_prediction  
+- fact_prediction_result  
+- news_sentiment_weighted_fact  
+- fp_growth_win_patterns  
+- fp_growth_win_rules  
+
+### Vì Sao Chọn Dim-Fact?
+
+- Tách context và event  
+- Tối ưu phân tích  
+- Lưu lịch sử rõ ràng  
+- Mở rộng linh hoạt  
 
 ---
 
-## Vì Sao Chọn Dim-Fact?
-
-- Tách biệt context và event
-- Tối ưu truy vấn phân tích
-- Lưu trữ lịch sử rõ ràng
-- Dễ mở rộng metric mới
-- Phù hợp chuẩn Data Warehouse
-- Hỗ trợ phân tích theo thời gian và theo tài sản
-
----
-
-# 4️⃣ Framework Modeling & Scoring
-
-## 🧮 Market Scoring
+# 5️⃣ Framework Modeling & Scoring
 
 Market Score =  
-Trend + Momentum + Volume + Volatility
+Trend + Momentum + Volume + Volatility  
 
 Confidence Score =  
-Market Score / Max Score
+Market Score / Max Score  
 
-### Cơ Chế Bảo Vệ (Guard)
+Guard Logic:
 
-- Conflict Detection
-- Weak Edge Filter
-- Confidence Band Filter
-- No-Trade Logic
-
-Mục tiêu:
-
-- Tránh overtrading
-- Hạn chế false signal
-- Giảm nhiễu trong regime squeeze
-- Duy trì tính ổn định chiến lược
+- Conflict Detection  
+- Weak Edge Filter  
+- Confidence Band Filter  
+- No-Trade Logic  
 
 ---
 
-# 5️⃣ Backtest & Quản Trị Rủi Ro
+# 6️⃣ Backtest & Risk Modeling
 
 Backtest đánh giá:
 
-- TP / SL động
-- Lookahead window
-- Win/Loss classification
-- PnL normalization
-- Rolling expectancy
-- Phân tích theo regime
+- TP / SL động  
+- Win/Loss classification  
+- PnL normalization  
+- Rolling expectancy  
+- Regime analysis  
 
 Đảm bảo:
 
-- Kiểm tra tính sống sót (survivability)
-- Phát hiện suy giảm edge
-- Tránh overfitting
-- Đánh giá hiệu suất dài hạn
+- Survivability  
+- Edge stability  
+- Tránh overfitting  
 
 ---
 
-# 6️⃣ Phân Tích Hiệu Suất
+# 7️⃣ Phân Tích Hiệu Suất
 
-## 📈 Equity Curve & Drawdown
+## 📈 Equity Curve
 
 ![Equity Curve](images/equity_curve.png)
-
-- Tăng trưởng vốn
-- Maximum drawdown
-- Đánh giá rủi ro hệ thống
-
----
 
 ## 📉 Rolling Expectancy
 
 ![Rolling Expectancy](images/rolling_expectancy.png)
 
-- Kiểm tra edge theo thời gian
-- Phát hiện giai đoạn mất lợi thế
-
----
-
 ## 📊 Rolling Winrate
 
 ![Rolling Winrate](images/rolling_winrate.png)
 
-- Đánh giá độ ổn định mô hình
-- Phân tích độ nhạy regime
-
----
-
-## 📡 Market Regime Radar
+## 📡 Market Regime
 
 ![Market Regime](images/market_regime.png)
 
-Hiển thị:
-
-- Trend strength
-- Momentum alignment
-- Volatility state
-
----
-
-## 📉 Price Regression
+## 📉 Regression
 
 ![Price Regression](images/price_regression.png)
 
-- Độ dốc xu hướng
-- Bias thị trường
-- Mean reversion behavior
-
----
-
-## 📊 FP-Growth Rule Mining
+## 📊 FP-Growth Rules
 
 ![Rule Strength](images/rule_strength.png)
 
-Sử dụng FP-Growth để:
+---
 
-- Tìm pattern giao dịch thắng lặp lại
-- Đo strength bằng Support, Confidence, Lift
-- Hỗ trợ tối ưu chiến lược
-- Cải thiện hệ thống scoring
+# 8️⃣ Production Considerations
+
+- Idempotent pipeline  
+- Retry logic qua Airflow  
+- Duplicate prevention  
+- Config-driven metric activation  
+- Partition-aware Spark execution  
 
 ---
 
-# 7️⃣ Yếu Tố Production
-
-Hệ thống được thiết kế để:
-
-- Có thể chạy lại không trùng dữ liệu
-- Retry khi job lỗi qua Airflow
-- Phân tách xử lý theo coin
-- Hỗ trợ mở rộng thêm tài sản
-- Kiểm soát duplicate bằng left-anti join
-- Cấu hình metric bật/tắt linh hoạt
-- Theo dõi và truy vết toàn bộ pipeline
-
----
-
-# 8️⃣ Tech Stack
+# 9️⃣ Tech Stack
 
 | Layer | Công nghệ |
 |--------|------------|
@@ -281,60 +305,42 @@ Hệ thống được thiết kế để:
 | Orchestration | Airflow |
 | Storage | MySQL |
 | API | Flask |
-| ML Mining | Spark ML (FP-Growth) |
-| Visualization | Custom Dashboard |
+| ML | Spark ML (FP-Growth) |
 
 ---
 
-# 9️⃣ Giá Trị Đạt Được
+# 🔟 Giá Trị Đạt Được
 
-## 📊 Kiến Thức Tài Chính
-
-- Hiểu cấu trúc OHLC
+## Financial
+- Hiểu cấu trúc thị trường
 - Momentum & Volatility
-- Risk Management
-- Edge Quantification
+- Risk management
 
-## 🏗 Data Engineering
+## Data Engineering
+- Spark
+- Kafka
+- Airflow
+- DW Modeling
+- Idempotent design
 
-- Spark Distributed Processing
-- Kafka Streaming
-- Airflow Orchestration
-- Idempotent Pipeline Design
-- Data Warehouse Modeling
+## Analytics & ML
+- Feature engineering
+- Deterministic scoring
+- Backtesting
+- Pattern mining
+- Regression
 
-## 📈 Data Analytics & ML
-
-- Feature Engineering
-- Deterministic Scoring
-- Backtesting Methodology
-- Expectancy Modeling
-- Association Rule Mining
-- Regression Analysis
-
-## 🧠 System Design Mindset
-
-- Thiết kế scalable
-- Phục hồi khi lỗi
-- Kiến trúc phân tầng rõ ràng
-- Tư duy production-grade
-- Kết nối giữa business problem và technical solution
+## System Design
+- Scalable architecture
+- Fault recovery
+- Production mindset
 
 ---
 
 # 🏁 Kết Luận
 
-Đây không chỉ là một hệ thống dự đoán crypto.
+Đây không chỉ là hệ thống dự đoán crypto.
 
-Đây là một nền tảng xử lý dữ liệu hoàn chỉnh:
+Đây là nền tảng xử lý dữ liệu hoàn chỉnh:
 
-- Ingestion thời gian thực
-- Xử lý phân tán
-- Data Warehouse chuẩn DW
-- Modeling định lượng có kiểm chứng
-- Pattern mining hỗ trợ tối ưu chiến lược
-- Dashboard phục vụ end-user
-
-Dự án thể hiện toàn bộ vòng đời dữ liệu:
-
-Từ dữ liệu thô → xử lý → lưu trữ → modeling → phân tích → insight hành động.
+Từ ingestion → processing → warehouse → modeling → analytics → actionable insight.
