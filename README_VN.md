@@ -1,7 +1,9 @@
-# 🚀 Nền Tảng Phân Tích & Nghiên Cứu Định Lượng Crypto (Production-Grade)
+# 🚀  Nền Tảng Phân Tích & Nghiên Cứu Định Lượng Crypto (Production-Grade)  
+### Hệ Thống Phân Tích & Dự Đoán Tài Sản Số Dựa Trên Dữ Liệu Thời Gian Thực  
 
-> Hệ thống Data Engineering thời gian thực & nền tảng nghiên cứu giao dịch định lượng  
-> Tài sản trọng tâm: BTC • ETH • BNB
+**Author:** Nguyễn Ngọc Nam  
+**Mentor:** Phạm Long Vân - Data Manager  
+**Location:** Ho Chi Minh City, Vietnam — 2025 
 
 ---
 
@@ -398,3 +400,9 @@ Dự án này không chỉ là một hệ thống tạo tín hiệu giao dịch 
 Thông qua việc thiết kế và triển khai hệ thống này, tôi không chỉ củng cố kiến thức về cấu trúc thị trường tài chính (OHLC, momentum, volatility, risk management) mà còn nâng cao tư duy Data Engineering ở mức hệ thống: thiết kế pipeline có thể chạy lại không trùng lặp (idempotent), kiểm soát duplicate, đảm bảo khả năng mở rộng theo tài sản và theo khối lượng dữ liệu, cũng như duy trì tính truy vết và minh bạch trong phân tích.
 
 Quan trọng hơn, dự án thể hiện cách kết nối giữa business problem và technical solution — chuyển đổi dữ liệu thô thành insight định lượng có khả năng kiểm chứng. Đây là nền tảng để phát triển các hệ thống phân tích dữ liệu ở quy mô lớn hơn, nơi độ ổn định, khả năng mở rộng và tính chính xác thống kê đóng vai trò cốt lõi.
+
+---
+
+## License
+This system is for **educational and research purposes only**.  
+© 2026 Nguyễn Ngọc Nam — Data Engineering Project.
