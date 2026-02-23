@@ -35,7 +35,7 @@ Hệ thống được xây dựng với tư duy:
 - Fault tolerance (chịu lỗi)
 - Traceability (truy vết dữ liệu)
   
-- Link demo: https://ngocnam-de-project.hocnghiepvu.com
+Link demo: https://ngocnam-de-project.hocnghiepvu.com
 
 ---
 
