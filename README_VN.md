@@ -454,49 +454,59 @@ Hệ thống được thiết kế để:
 
 ---
 
-# 🔟 Tech Stack
+# 🔟 Giá Trị Đạt Được (Generated Value)
 
-| Layer | Công nghệ |
-|--------|------------|
-| Streaming | Kafka |
-| Processing | Apache Spark |
-| Orchestration | Airflow |
-| Storage | MySQL |
-| API | Flask |
-| ML Mining | Spark ML (FP-Growth) |
-| Visualization | Custom Dashboard |
+Việc thiết kế và triển khai hệ thống này không chỉ dừng lại ở việc xây dựng một nền tảng phân tích crypto, mà còn giúp tôi nâng cấp toàn diện về kiến thức domain, năng lực kỹ thuật và tư duy hệ thống.
+
+## 📊 1. Kiến Thức Domain Tài Chính
+
+- Hiểu rõ cấu trúc dữ liệu thị trường (OHLCV) và hành vi hình thành giá  
+- Phân tích Momentum, Trend, Volatility trong từng regime  
+- Thiết kế cơ chế Take Profit / Stop Loss phù hợp với mức biến động  
+- Định lượng “edge” thay vì dựa vào cảm tính  
+- Nhận diện mối quan hệ giữa tin tức, tâm lý thị trường và biến động giá  
 
 ---
 
-# 🔟 Giá Trị Đạt Được
+## 🏗 2. Data Engineering & Data Platform
 
-## 📊 Kiến Thức Tài Chính
-- Hiểu cấu trúc OHLC
-- Momentum & Volatility
-- Risk Management
-- Edge Quantification
+- Xây dựng pipeline streaming với Kafka  
+- Xử lý phân tán bằng Spark (Batch & Streaming)  
+- Thiết kế pipeline idempotent và có thể replay  
+- Triển khai orchestration bằng Airflow  
+- Quản lý duplicate và đảm bảo tính nhất quán dữ liệu  
+- Thiết kế partition strategy theo symbol & interval  
 
-## 🏗 Data Engineering
-- Spark Distributed Processing
-- Kafka Streaming
-- Airflow Orchestration
-- Idempotent Pipeline Design
-- Data Warehouse Modeling
+---
 
-## 📈 Data Analytics & ML
-- Feature Engineering
-- Deterministic Scoring
-- Backtesting Methodology
-- Expectancy Modeling
-- Association Rule Mining
-- Regression Analysis
+## 🗄 3. Data Warehouse & Modeling Concept
 
-## 🧠 System Design Mindset
-- Thiết kế scalable
-- Phục hồi khi lỗi
-- Kiến trúc phân tầng rõ ràng
-- Tư duy production-grade
-- Kết nối giữa business problem và technical solution
+- Áp dụng mô hình Dim–Fact chuẩn DW  
+- Xác định Grain rõ ràng cho từng fact table  
+- Thiết kế multi-layer sentiment pipeline (Raw → Mapping → Weighted → Aggregated)  
+- Tối ưu truy vấn phân tích theo thời gian  
+- Đảm bảo khả năng mở rộng khi thêm tài sản hoặc metric mới  
+
+---
+
+## 📈 4. Data Analytics & Statistical Thinking
+
+- Thiết kế hệ thống metric abstraction  
+- Xây dựng deterministic scoring engine  
+- Triển khai backtest leakage-safe  
+- Phân tích Rolling Expectancy & Rolling Winrate  
+- Ứng dụng FP-Growth để khai phá pattern giao dịch thắng  
+- Kiểm chứng edge dựa trên dữ liệu thay vì giả định  
+
+---
+
+## 🧠 5. System Design & Mindset
+
+- Tư duy theo hệ thống thay vì script rời rạc  
+- Thiết kế kiến trúc có thể mở rộng và tái sử dụng  
+- Đảm bảo tính reproducible & traceable  
+- Quản lý lifecycle dữ liệu từ ingestion → modeling → validation → visualization  
+- Kết nối bài toán kinh doanh với giải pháp kỹ thuật  
 
 ---
 
