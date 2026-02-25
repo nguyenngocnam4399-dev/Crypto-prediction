@@ -146,9 +146,11 @@ Thiết kế này đảm bảo:
 
 ---
 
-# 2️⃣ Thiết Kế Data Engineering
+# 3️⃣ Thiết Kế & Xây Dựng Hệ Thống 
 
 ## 🔄 Ingestion Real-Time
+
+![Ingestion Real-Time](images/ingestion_layer.png)
 
 - Kafka giúp tách biệt producer & consumer
 - Hỗ trợ replay dữ liệu
