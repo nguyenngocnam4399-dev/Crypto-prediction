@@ -230,7 +230,7 @@ confidence = max(score) / MAX_SCORE
 
 # ⏱ 5️⃣ Orchestration & Điều Phối
 
-![Airflow DAG](images/your_airflow_dag.png)
+![Airflow DAG](images/airflow_dag.png)
 
 Hệ thống được điều phối bằng Airflow:
 
@@ -377,7 +377,7 @@ Backtest đánh giá:
 
 ---
 
-# 📊 8️⃣ Phân Tích Hiệu Suất & Kiểm Chứng
+# 📊 9️⃣ Phân Tích Hiệu Suất & Kiểm Chứng
 
 ## 📈 Equity Curve & Drawdown
 
@@ -444,7 +444,7 @@ Mục tiêu: Khai phá pattern giao dịch thắng.
 
 ---
 
-# 9️⃣ Yếu Tố Production
+# 🔟 Yếu Tố Production
 
 Hệ thống được thiết kế để:
 
@@ -458,7 +458,7 @@ Hệ thống được thiết kế để:
 
 ---
 
-# 🔟 Giá Trị Đạt Được
+# 🎯Giá Trị Đạt Được
 
 Việc thiết kế và triển khai hệ thống này không chỉ dừng lại ở việc xây dựng một nền tảng phân tích crypto, mà còn giúp tôi nâng cấp toàn diện về kiến thức domain, năng lực kỹ thuật và tư duy hệ thống.
 
