@@ -226,119 +226,27 @@ confidence = max(score) / MAX_SCORE
 - Controlled lookahead window
 - Rolling validation
 
+---
 
-Thiết kế đảm bảo: 
-- Partition theo symbol
-- Anti-duplicate write (left-anti join)
-- Idempotent JDBC insert
-- Tách biệt xử lý theo từng tài sản
+# ⏱ 5️⃣ Orchestration & Điều Phối
+
+![Airflow DAG](images/your_airflow_dag.png)
+
+Hệ thống được điều phối bằng Airflow:
+
+- Multi-coin parallel branch (BTC / ETH / BNB)
+- Retry policy
+- Failure recovery
+- Isolated job execution
+
+Thiết kế đảm bảo:
+
+- Job crash không làm sập toàn hệ thống
+- Có thể chạy lại mà không trùng dữ liệu
 
 ---
 
-# 🔍 3️⃣ Data Pipeline Architecture Breakdown
-
-## 1. Data Ingestion
-
-### Market Data
-- Kafka streams real-time OHLCV data  
-- Spark Streaming normalizes records  
-- Stored in `fact_kline`  
-
-### News Data
-- News crawled from crypto media sources  
-- Sent to Kafka topic  
-- Consumed and stored in `news_fact`  
-- Symbol mapping stored in `news_coin_fact`  
-
-Both streams remain independent and immutable.
-
----
-
-## 2. Indicator Computation
-
-- Atomic indicators computed via Spark  
-- Stored in `fact_indicator`  
-- Partitioned by symbol and interval  
-- Fully recomputable from raw kline  
-
----
-
-## 3. News Sentiment Processing
-
-News sentiment is modeled as a multi-layer fact pipeline:
-
-### Raw Layer — `news_fact`
-Grain: 1 row = 1 article  
-- title  
-- url (UNIQUE)  
-- sentiment_score  
-- created_date  
-- view_number  
-- tag_id  
-
-### Mapping Layer — `news_coin_fact`
-Grain: `(news_id, symbol_id)`  
-- symbol attribution  
-- confidence score  
-
-### Weighted Layer — `news_sentiment_weighted_fact`
-Grain: `(news_id, symbol_id)`  
-
-Includes:
-- raw_sentiment  
-- tag_weight  
-- confidence  
-- weighted_score  
-- final_score  
-- event_time  
-
-Constraints:
-- UNIQUE(news_id, symbol_id)  
-- Indexed for join optimization  
-
-### Aggregated Layer — `news_sentiment_agg_fact`
-Grain: `(symbol_id, window_start)`  
-
-- news_count  
-- sentiment_weighted  
-
-Aligned to trading interval resolution.
-
----
-
-## 4. Metric Abstraction
-
-- Trading conditions defined in `dim_metric`  
-- Technical + sentiment metrics supported  
-- Evaluated into `fact_metric_value`  
-- Threshold, trend, cross, volatility logic  
-
----
-
-## 5. Prediction Engine
-
-buy_score  = Σ(weighted BUY metrics)  
-sell_score = Σ(weighted SELL metrics)  
-
-edge = |buy_score − sell_score|  
-confidence = max(score) / MAX_SCORE  
-
-Stored in `fact_prediction`.
-
-Deterministic, explainable, leakage-safe.
-
----
-
-## 6. Backtesting & Confirmation
-
-- Adaptive TP/SL  
-- Controlled lookahead  
-- Results stored in `fact_prediction_result`  
-- Strict separation from prediction  
-
----
-
-# 📊 4️⃣ Data Understanding (EDA) & Data Dictionary Reasoning
+# 📊 6️⃣ Data Understanding (EDA) & Data Dictionary Reasoning
 
 Việc thu thập dữ liệu trong hệ thống không chỉ mang tính kỹ thuật mà dựa trên cơ chế hình thành giá và hành vi thị trường crypto.
 
@@ -425,7 +333,7 @@ Sentiment được sử dụng để bổ sung yếu tố tâm lý vào hệ th�
 
 ---
 
-# 6️⃣ Framework Modeling & Scoring
+# 7️⃣ Framework Modeling & Scoring
 
 ## 🧮 Market Scoring
 
@@ -449,7 +357,7 @@ Mục tiêu:
 
 ---
 
-# 7️⃣ Backtest & Quản Trị Rủi Ro
+# 8️⃣ Backtest & Quản Trị Rủi Ro
 
 Backtest đánh giá:
 
@@ -469,7 +377,7 @@ Backtest đánh giá:
 
 ---
 
-# 8️⃣ Phân Tích Hiệu Suất
+# 📊 8️⃣ Phân Tích Hiệu Suất & Kiểm Chứng
 
 ## 📈 Equity Curve & Drawdown
 
@@ -550,7 +458,7 @@ Hệ thống được thiết kế để:
 
 ---
 
-# 🔟 Giá Trị Đạt Được (Generated Value)
+# 🔟 Giá Trị Đạt Được
 
 Việc thiết kế và triển khai hệ thống này không chỉ dừng lại ở việc xây dựng một nền tảng phân tích crypto, mà còn giúp tôi nâng cấp toàn diện về kiến thức domain, năng lực kỹ thuật và tư duy hệ thống.
 
