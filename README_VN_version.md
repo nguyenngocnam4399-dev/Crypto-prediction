@@ -1,4 +1,4 @@
-# 🚀 Crypto Quantitative Research & Real-Time Data Platform (Production-Grade) 
+# 🚀 Crypto Quantitative Research & Real-Time Data Platform 
 ### Hệ Thống Phân Tích & Dự Đoán Tài Sản Số Dựa Trên Dữ Liệu Thời Gian Thực  
 
 **Author:** Nguyễn Ngọc Nam  
