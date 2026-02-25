@@ -188,8 +188,46 @@ Thiết kế này đảm bảo:
   - Cross logic
   - Trend logic
   - Volatility logic
-Thiết kế đảm bảo:
+ 
+---
 
+## 4.4 Prediction Engine
+
+![Prediction Engine](images/prediction_engine.png)
+
+buy_score  = Σ(weighted BUY metrics)  
+sell_score = Σ(weighted SELL metrics)  
+
+edge = |buy_score − sell_score|  
+confidence = max(score) / MAX_SCORE  
+
+- Conflict detection
+- No-trade filter
+- Confidence band filter
+
+---
+
+## 4.5 Anti-Duplicate & Idempotent Design
+
+![Anti-Duplicate](images/anti_duplicate.png)
+
+- Left-anti join trước khi ghi DB
+- Kiểm soát duplicate write
+- Replay-safe
+
+---
+
+## 4.6 Backtesting
+
+![Backtesting](images/backtesting.png)
+
+- Tách prediction và result
+- TP/SL adaptive
+- Controlled lookahead window
+- Rolling validation
+
+
+Thiết kế đảm bảo: 
 - Partition theo symbol
 - Anti-duplicate write (left-anti join)
 - Idempotent JDBC insert
