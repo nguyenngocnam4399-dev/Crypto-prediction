@@ -148,7 +148,7 @@ Thiết kế này đảm bảo:
 
 # 3️⃣ Thiết Kế & Xây Dựng Hệ Thống 
 
-## 4.1 Ingestion Layer
+## 3.1 Ingestion Layer
 
 ![Ingestion Layer](images/ingestion_layer.png)
 
@@ -157,7 +157,7 @@ Thiết kế này đảm bảo:
 - Có thể scale ngang khi volume tăng
 - Giảm phụ thuộc trực tiếp vào nguồn API
 
-## 4.2 Indicator Computation
+## 3.2 Indicator Computation
 
 ![Indicator Computation](images/indicator_computation.png)
 
@@ -167,7 +167,7 @@ Thiết kế này đảm bảo:
 
 ---
 
-## 4.3 Metric Abstraction
+## 3.3 Metric Abstraction
 
 | metric_code | Logic | Direction | Weight |
 |-------------|--------|-----------|--------|
@@ -191,7 +191,7 @@ Thiết kế này đảm bảo:
  
 ---
 
-## 4.4 Prediction Engine
+## 3.4 Prediction Engine
 
 ![Prediction Engine](images/prediction_engine.png)
 
@@ -207,7 +207,7 @@ confidence = max(score) / MAX_SCORE
 
 ---
 
-## 4.5 Anti-Duplicate & Idempotent Design
+## 3.5 Anti-Duplicate & Idempotent Design
 
 ![Anti-Duplicate](images/anti_duplicate.png)
 
@@ -217,7 +217,7 @@ confidence = max(score) / MAX_SCORE
 
 ---
 
-## 4.6 Backtesting
+## 3.6 Backtesting
 
 ![Backtesting](images/backtesting.png)
 
@@ -228,7 +228,7 @@ confidence = max(score) / MAX_SCORE
 
 ---
 
-# ⏱ 5️⃣ Orchestration & Điều Phối
+# 4️⃣ Orchestration & Điều Phối
 
 ![Airflow DAG](images/airflow_dag.png)
 
@@ -246,7 +246,7 @@ Thiết kế đảm bảo:
 
 ---
 
-# 📊 6️⃣ Data Understanding (EDA) & Data Dictionary Reasoning
+# 5️⃣ Data Understanding (EDA) & Data Dictionary Reasoning
 
 Việc thu thập dữ liệu trong hệ thống không chỉ mang tính kỹ thuật mà dựa trên cơ chế hình thành giá và hành vi thị trường crypto.
 
@@ -333,7 +333,7 @@ Sentiment được sử dụng để bổ sung yếu tố tâm lý vào hệ th�
 
 ---
 
-# 7️⃣ Framework Modeling & Scoring
+# 6️⃣ Framework Modeling & Scoring
 
 ## 🧮 Market Scoring
 
@@ -357,7 +357,7 @@ Mục tiêu:
 
 ---
 
-# 8️⃣ Backtest & Quản Trị Rủi Ro
+# 7️⃣ Backtest & Quản Trị Rủi Ro
 
 Backtest đánh giá:
 
@@ -377,7 +377,7 @@ Backtest đánh giá:
 
 ---
 
-# 📊 9️⃣ Phân Tích Hiệu Suất & Kiểm Chứng
+# 8️⃣ Phân Tích Hiệu Suất & Kiểm Chứng
 
 ## 📈 Equity Curve & Drawdown
 
@@ -444,7 +444,7 @@ Mục tiêu: Khai phá pattern giao dịch thắng.
 
 ---
 
-# 🔟 Yếu Tố Production
+# 9️⃣ Yếu Tố Production
 
 Hệ thống được thiết kế để:
 
@@ -458,7 +458,7 @@ Hệ thống được thiết kế để:
 
 ---
 
-# 🎯Giá Trị Đạt Được
+# 🔟 Giá Trị Đạt Được
 
 Việc thiết kế và triển khai hệ thống này không chỉ dừng lại ở việc xây dựng một nền tảng phân tích crypto, mà còn giúp tôi nâng cấp toàn diện về kiến thức domain, năng lực kỹ thuật và tư duy hệ thống.
 
