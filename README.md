@@ -391,9 +391,57 @@ The system is designed to:
 
 # 🔟 Gained Value
 
-Designing and implementing this system enhanced not only domain expertise but also technical capability and system-level thinking.
+Designing and implementing this system went beyond building a cryptocurrency analytics platform; it significantly strengthened my domain knowledge, technical capabilities, and system-level thinking.
 
-(Sections 1–5 preserved exactly as original structure and meaning.)
+## 📊 1. Financial Domain Knowledge
+
+- Developed a clear understanding of market data structures (OHLCV) and price formation behavior  
+- Analyzed Momentum, Trend, and Volatility across different market regimes  
+- Designed Take Profit / Stop Loss mechanisms aligned with volatility levels  
+- Quantified trading “edge” instead of relying on intuition  
+- Identified relationships between news, market sentiment, and price movements  
+
+---
+
+## 🏗 2. Data Engineering & Data Platform
+
+- Built real-time streaming pipelines using Kafka  
+- Implemented distributed processing with Spark (Batch & Streaming)  
+- Designed idempotent and replay-safe data pipelines  
+- Orchestrated workflows using Airflow  
+- Managed duplicate control and ensured data consistency  
+- Designed partition strategies by symbol and interval  
+
+---
+
+## 🗄 3. Data Warehouse & Modeling Concept
+
+- Applied a standard Dim–Fact Data Warehouse model  
+- Clearly defined data grain for each fact table  
+- Designed a multi-layer sentiment processing pipeline (Raw → Mapping → Weighted → Aggregated)  
+- Optimized analytical queries over time-series data  
+- Ensured extensibility when adding new assets or metrics  
+
+---
+
+## 📈 4. Data Analytics & Statistical Thinking
+
+- Designed a flexible metric abstraction framework  
+- Built a deterministic scoring engine  
+- Implemented leakage-safe backtesting  
+- Analyzed Rolling Expectancy and Rolling Winrate  
+- Applied FP-Growth for winning trade pattern mining  
+- Validated trading edge using data rather than assumptions  
+
+---
+
+## 🧠 5. System Design & Mindset
+
+- Adopted a system-oriented approach instead of isolated scripting  
+- Designed scalable and reusable architecture  
+- Ensured reproducibility and traceability  
+- Managed the full data lifecycle from ingestion → modeling → validation → visualization  
+- Connected business problems with technical solutions
 
 ---
 
